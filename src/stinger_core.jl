@@ -57,6 +57,23 @@ function Stinger(
     s
 end
 
+#Convenience function to not have to specify UInt for nv
+function Stinger(
+    nv::Int64,
+    etype::Int64,
+    offsets::Vector{Int64},
+    adj::Vector{Int64},
+    weights::Vector{Int64},
+    timestamps::Vector{Int64},
+    firsttimestamps::Vector{Int64},
+    singletimestamp::Int64
+    )
+    if nv<=0
+        error("No of vertices must be a positive integer")
+    end
+    Stinger(UInt(nv), etype, offsets, adj, weights, timestamps, firsttimestamps, singletimestamp)
+end
+
 function remove_edge!(s::Stinger, etype::Int64, from::Int64, to::Int64)
     status = ccall(
         dlsym(stinger_core_lib, "stinger_remove_edge"),
