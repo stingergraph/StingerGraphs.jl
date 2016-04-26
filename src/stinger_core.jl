@@ -3,7 +3,12 @@ import Base: unsafe_convert
 
 export Stinger, remove_edge!, insert_edge!, consistency_check
 
-stinger_core_lib = dlopen("/Users/rohitvarkey/Code/gatech/stinger/build/lib/libstinger_core.dylib")
+if "STINGER_LIB_PATH" in keys(ENV)
+    stinger_core_lib = dlopen(joinpath(ENV["STINGER_LIB_PATH"],"libstinger_core"))
+else
+    stinger_core_lib = dlopen("libstinger_core")
+end
+
 
 type Stinger
     handle::Ptr{Void}
