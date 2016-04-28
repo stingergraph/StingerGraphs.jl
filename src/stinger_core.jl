@@ -1,7 +1,12 @@
 import Base.Libdl: dlopen, dlsym
 import Base: unsafe_convert
 
-export Stinger, remove_edge!, insert_edge!, consistency_check
+export Stinger,
+remove_edge!,
+insert_edge!,
+remove_edges!,
+insert_edges!,
+consistency_check
 
 if "STINGER_LIB_PATH" in keys(ENV)
     stinger_core_lib = dlopen(joinpath(ENV["STINGER_LIB_PATH"],"libstinger_core"))
@@ -103,6 +108,22 @@ function insert_edge!(
         error("Error while adding edge")
     end
     status
+end
+
+function insert_edges!(s::Stinger, edges::AbstractArray, numedges::Integer)
+    m = size(edges,2);
+    numedges <= m || throw(DimensionMismatch("requested to insert too many edges $m < $numedges"))
+    size(edges, 1) == 5 || throw(DimensionMismatch("Wrong input format should be 5×numedges"))
+    for i in 1:numedges
+        insert_edge!(s, edges[1,i], edges[2,i], edges[3,i], edges[4,i], edges[5,i])
+    end
+end
+
+function remove_edges!(s::Stinger, edges::AbstractArray, numedges::Integer)
+    size(edges, 1) == 5 || throw(DimensionMismatch("Input format is 5×numedges (etype, src, dst, weight, times)"))
+    for i in 1:numedges
+        remove_edge!(s, 0, edges[2,i], edges[3,i])
+    end
 end
 
 function consistency_check(s::Stinger, nv::Int64)
