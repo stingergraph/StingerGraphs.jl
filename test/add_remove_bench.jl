@@ -27,7 +27,7 @@ function bench(numvertices, numedges)
 end
 
 info("Setting STINGER Parameters")
-ENV["STINGER_MAX_MEMSIZE"] = 10000000
+ENV["STINGER_MAX_MEMSIZE"] = 20000000
 info("small run to precompile")
 bench(100, 100)
 info("real benchmark: nv=1000,ne=4000")
