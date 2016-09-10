@@ -1,13 +1,17 @@
-import Base: getindex
+import Base: getindex, setindex!
 
 for field in fieldnames(StingerGraph)
     datatype = fieldtype(StingerGraph, field)
     idx = findfirst(stingergraphfields, field)
-    fname = Symbol("get_$field")
+    getfname = Symbol("get_$field")
+    setfname = Symbol("set_$field")
     eval(
         quote
-            export $fname
-            $(fname)(x::Stinger) = unsafe_load(convert(Ptr{$datatype}, x.handle), $idx)
+            export $getfname, $setfname
+            $(getfname)(x::Stinger) = unsafe_load(convert(Ptr{$datatype}, x.handle), $idx)
+            $(setfname)(x::Stinger, val::$datatype) = begin
+                unsafe_store!(convert(Ptr{$datatype}, x.handle), val, $idx)
+            end
         end
     )
 end
@@ -17,5 +21,12 @@ function getindex(x::Stinger, field::Symbol)
     fname = Symbol("get_$field")
     eval(
         :($fname($x))
+    )
+end
+
+function setindex!(x::Stinger, val, field::Symbol)
+    fname = Symbol("set_$field")
+    eval(
+        :($fname($x, $val))
     )
 end
