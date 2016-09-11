@@ -19,14 +19,12 @@ end
 function getindex(x::Stinger, field::Symbol)
     @assert field in stingergraphfields "Field does not exist in StingerGraph"
     fname = Symbol("get_$field")
-    eval(
-        :($fname($x))
-    )
+    tempf = x -> eval(:($fname($x)))
+    tempf(x)
 end
 
 function setindex!(x::Stinger, val, field::Symbol)
     fname = Symbol("set_$field")
-    eval(
-        :($fname($x, $val))
-    )
+    tempf = (x, val, fname) -> eval(:($fname($x, $val)))
+    tempf(x, val, fname)
 end
