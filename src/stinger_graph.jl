@@ -23,4 +23,15 @@ immutable StingerGraph
     size_t::UInt
 end
 
-stingergraphfields = fieldnames(StingerGraph)
+const stingergraphfields = fieldnames(StingerGraph)
+
+function createfieldenums()
+    enumexp = :(@enum StingerFields)
+    for (idx, field) in enumerate(stingergraphfields)
+        eval(:(export $field))
+        push!(enumexp.args, :($field=$idx))
+    end
+    eval(enumexp)
+end
+
+createfieldenums()
