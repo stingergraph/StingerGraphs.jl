@@ -25,6 +25,12 @@ end
 
 const stingergraphfields = fieldnames(StingerGraph)
 
+"""
+Generates an Enumeration of all fields in `StingerGraph`.
+The generated fields are of type `StingerFields`.
+They are also exported so that the user can use it to access fields of `Stinger`
+objects using `getindex` and `setindex!`.
+"""
 function createfieldenums()
     enumexp = :(@enum StingerFields)
     for (idx, field) in enumerate(stingergraphfields)
