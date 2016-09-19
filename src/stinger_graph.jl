@@ -23,21 +23,23 @@ immutable StingerGraph
     size_t::UInt
 end
 
+export max_nv, max_neblock, max_netypes, max_nvtypes, num_insertions, num_deletions,
+num_insertions_last_batch, num_deletions_last_batch, batch_time, update_time, queue_size,
+dropped_batches, vertices_start, physmap_start, etype_names_start, vtype_names_start,
+ETA_start, ebpool_start, size_t
+
 const stingergraphfields = fieldnames(StingerGraph)
 
 """
 Generates an Enumeration of all fields in `StingerGraph`.
 The generated fields are of type `StingerFields`.
-They are also exported so that the user can use it to access fields of `Stinger`
-objects using `getindex` and `setindex!`.
 """
-function createfieldenums()
+macro createfieldenums()
     enumexp = :(@enum StingerFields)
-    for (idx, field) in enumerate(stingergraphfields)
-        eval(:(export $field))
-        push!(enumexp.args, :($field=$idx))
+    for (idx, field) in enumerate(fieldnames(StingerWrapper.StingerGraph))
+        push!(enumexp.args, :($(esc(field))=$(esc(idx))))
     end
-    eval(enumexp)
+    enumexp
 end
 
-createfieldenums()
+@createfieldenums()
