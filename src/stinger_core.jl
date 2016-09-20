@@ -28,6 +28,11 @@ end
 
 unsafe_convert{T}(::Type{Ptr{T}}, s::Stinger) = s.handle
 
+"""Use this to get a `StingerGraph` representation of your `Stinger` graph. This
+representation will not be kept in sync with the graph. If you make changes,
+you will need to call this again to load the graph with the new attributes."""
+loadstingergraph(s::Stinger) = unsafe_load(convert(Ptr{StingerGraph}, s.handle))
+
 function stinger_free(x::Stinger)
     # To prevent segfaults
     if x.handle != C_NULL
