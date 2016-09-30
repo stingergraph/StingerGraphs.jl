@@ -21,7 +21,7 @@ function bench(numvertices=10000, numedges=100000, filename="insertremovetrails.
     inserttrial = @benchmark insert_edge!($s, 0, src, dst, 1, 0) seconds=10 samples=numedges setup=src,dst=$(edges)[:, $idx];idx+=1
     idx = 1
     info("Benchmarking removals")
-    removetrial = @benchmark insert_edge!($s, 0, src, dst, 1, 0) seconds=10 samples=ceil(Int, numedges/4) setup=src,dst=edges[:, $idx];idx+=1
+    removetrial = @benchmark insert_edge!($s, 0, src, dst, 1, 0) seconds=10 samples=ceil(Int, numedges/4) setup=src,dst=$(edges)[:, $idx];idx+=1
 
     jldopen(filename, "w") do f
         write(f, "inserttrial", inserttrial)
