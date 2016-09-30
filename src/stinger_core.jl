@@ -2,6 +2,7 @@ import Base.Libdl: dlopen, dlsym
 import Base: unsafe_convert
 
 export Stinger,
+stinger_core_lib,
 remove_edge!,
 insert_edge!,
 remove_edges!,
@@ -9,9 +10,9 @@ insert_edges!,
 consistency_check
 
 if "STINGER_LIB_PATH" in keys(ENV)
-    stinger_core_lib = dlopen(joinpath(ENV["STINGER_LIB_PATH"],"libstinger_core"))
+    const stinger_core_lib = dlopen(joinpath(ENV["STINGER_LIB_PATH"],"libstinger_core"))
 else
-    stinger_core_lib = dlopen("libstinger_core")
+    const stinger_core_lib = dlopen("libstinger_core")
 end
 
 
