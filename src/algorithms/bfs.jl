@@ -11,10 +11,10 @@ function bfs(s::Stinger, source::Int)
         vertexneighbors = getsuccessors(s, src)
         for vertex in vertexneighbors
             #If not already set, and is not found in the queue.
-            if !visited[vertex]
-                push!(next, vertex) #Push onto queue
-                visited[vertex] = true #Mark that it is has been visited.
-                parents[vertex] = src
+            if !visited[vertex+1]
+                push!(next, vertex+1) #Push onto queue
+                visited[vertex+1] = true #Mark that it is has been visited.
+                parents[vertex+1] = src
             end
         end
     end
