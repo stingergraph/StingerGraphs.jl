@@ -3,8 +3,9 @@ export bfs
 function bfs(s::Stinger, source::Int)
     nv = s[max_nv]
     visited = falses(nv) #Initialize with false
+    parents = fill(-1, nv) #Initialize parents array with -1's.
     next = Vector{Int64}([source])
-    sizehint!(next, s[max_nv])
+    sizehint!(next, nv)
     while !isempty(next)
         src = shift!(next) #Get first element
         vertexneighbors = getsuccessors(s, src)
@@ -13,8 +14,9 @@ function bfs(s::Stinger, source::Int)
             if !visited[vertex]
                 push!(next, vertex) #Push onto queue
                 visited[vertex] = true #Mark that it is has been visited.
+                parents[vertex] = src
             end
         end
     end
-    findin(visited, true) #Return all vertices that are set to true
+    parents
 end
