@@ -1,8 +1,8 @@
 export bfs
 
 function bfs(s::Stinger, source::Int)
-    nv = s[max_nv]
-    visited = falses(nv) #Initialize with false
+    nv = get_nv(s)
+    nv>source || throw(DimensionMismatch("Attempting to run BFS with source $source in a graph with only $nv vertices."))
     parents = fill(-1, nv) #Initialize parents array with -1's.
     next = Vector{Int64}([source])
     sizehint!(next, nv)
@@ -11,9 +11,8 @@ function bfs(s::Stinger, source::Int)
         vertexneighbors = getsuccessors(s, src)
         for vertex in vertexneighbors
             #If not already set, and is not found in the queue.
-            if !visited[vertex+1]
-                push!(next, vertex+1) #Push onto queue
-                visited[vertex+1] = true #Mark that it is has been visited.
+            if parents[vertex+1]!=-1 || vertex!=source
+                push!(next, vertex) #Push onto queue
                 parents[vertex+1] = src
             end
         end

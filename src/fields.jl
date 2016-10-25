@@ -1,4 +1,5 @@
 import Base: getindex, setindex!
+export get_nv
 
 function getindex(x::Stinger, field::StingerFields)
     idx = Int(field)
@@ -25,4 +26,17 @@ function setindex!(x::Stinger, val, field::StingerFields)
     @assert isa(val, ftype)
     basepointer = convert(Ptr{ftype}, x.handle)
     unsafe_store!(basepointer,val,idx)
+end
+
+"""Returns number of active vertices in the graph. This is based on the largest
+vertex ID which has a non-zero indegree or outdegree."""
+function get_nv(x::Stinger)
+    nv = ccall(
+        dlsym(stinger_core_lib, "stinger_max_active_vertex"),
+        Int64,
+        (Ptr{Void},),
+        x
+    )
+    nv==0 && return nv
+    nv+1
 end
