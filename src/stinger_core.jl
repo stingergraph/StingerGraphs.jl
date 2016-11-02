@@ -2,16 +2,19 @@ import Base.Libdl: dlopen, dlsym
 import Base: unsafe_convert
 
 export Stinger,
+stinger_core_lib,
 remove_edge!,
 insert_edge!,
 remove_edges!,
 insert_edges!,
-consistency_check
+consistency_check,
+outdegree,
+getsuccessors
 
 if "STINGER_LIB_PATH" in keys(ENV)
-    stinger_core_lib = dlopen(joinpath(ENV["STINGER_LIB_PATH"],"libstinger_core"))
+    const stinger_core_lib = dlopen(joinpath(ENV["STINGER_LIB_PATH"],"libstinger_core"))
 else
-    stinger_core_lib = dlopen("libstinger_core")
+    const stinger_core_lib = dlopen("libstinger_core")
 end
 
 
@@ -27,6 +30,11 @@ type Stinger
 end
 
 unsafe_convert{T}(::Type{Ptr{T}}, s::Stinger) = s.handle
+
+"""Use this to get a `StingerGraph` representation of your `Stinger` graph. This
+representation will not be kept in sync with the graph. If you make changes,
+you will need to call this again to load the graph with the new attributes."""
+loadstingergraph(s::Stinger) = unsafe_load(convert(Ptr{StingerGraph}, s.handle))
 
 function stinger_free(x::Stinger)
     # To prevent segfaults
@@ -134,4 +142,51 @@ function consistency_check(s::Stinger, nv::Int64)
         s, nv
     )
     status == 0 #true if 0, else false
+end
+
+"Return outdegree of vertex index."
+function outdegree(s::Stinger, src::Int64)
+    #TODO: Add check if vertex exists in the graph
+    ccall(
+        dlsym(stinger_core_lib, "stinger_outdegree_get"),
+        Int64,
+        (Ptr{Void}, Int64),
+        s, src
+    )
+end
+
+"Return a `Vector` of indices representing the successors of the source"
+function getsuccessors(s::Stinger, src::Int64)
+    #Ideally, allocating a buffer would be preffered.
+    #This makes 2 calls to outdegree - one from here and one from inside C
+    outdeg = outdegree(s, src)
+    vertexneighbors = zeros(Int64, outdeg)
+    if outdeg==0
+        return vertexneighbors
+    end
+    ccall(
+        dlsym(stinger_core_lib, "stinger_gather_successors"),
+        Void,
+        (
+            Ptr{Void}, #Stinger instance
+            Int64, #Source vertex
+            Ptr{Int64}, #Outdegree variable
+            Ptr{Int64}, #Output buffer
+            Ptr{Int64}, #weight
+            Ptr{Int64}, #timefirst
+            Ptr{Int64}, #timerecent
+            Ptr{Int64}, #type
+            Int64 #Max Length
+        ),
+        s,
+        src,
+        pointer_from_objref(outdeg),
+        vertexneighbors,
+        C_NULL,
+        C_NULL,
+        C_NULL,
+        C_NULL,
+        typemax(Int64)
+    )
+    vertexneighbors
 end
