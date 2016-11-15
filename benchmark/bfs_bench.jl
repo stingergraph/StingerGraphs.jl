@@ -17,9 +17,9 @@ function setupgraph(
     return s
 end
 
-function bfsbenchutil(s::Stinger)
-    for i in 0:get_nv(s)-1
-        bfs(s, i)
+function bfsbenchutil(s::Stinger, nv::Int64)
+    for i in 0:nv-1
+        bfs(s, i, nv)
     end
 end
 
@@ -31,7 +31,8 @@ function bench(
     c::Float64 = 0.19,
     filename::String="bfs_bench.jld"
     )
-    bfs_bench = @benchmarkable bfsbenchutil(s) seconds=10 setup=(s=setupgraph($scale, $edgefactor))
+    nv = 2^scale
+    bfs_bench = @benchmarkable bfsbenchutil(s, $nv) seconds=10 setup=(s=setupgraph($scale, $edgefactor))
     info("Running BFS benchmark")
     bfs_trial = run(bfs_bench)
     jldopen(filename, "w") do f
