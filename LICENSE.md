@@ -23,3 +23,10 @@ The StingerWrapper.jl package is licensed under the Simplified "2-clause" BSD Li
 > THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 > (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 > OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+Included Kronecker graph generator:
+  Copyright (C) 2009-2010 The Trustees of Indiana University.
+
+  Use, modification and distribution is subject to the Boost Software
+  License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
+  http://www.boost.org/LICENSE_1_0.txt)
