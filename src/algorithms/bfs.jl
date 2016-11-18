@@ -1,7 +1,16 @@
 export bfs
 
-function bfs(s::Stinger, source::Int)
+"""
+This version is slower as it makes a call to `stinger_max_active_vertex`,
+which is sequential and runs through every vertex in the graph. If you know
+the maximum number of active vertices, call `bfs(s, source, nv)` which is faster.
+"""
+function bfs(s::Stinger, source::Int64)
     nv = get_nv(s)
+    bfs(s, source, nv)
+end
+
+function bfs(s::Stinger, source::Int64, nv::Int64)
     nv>source || throw(DimensionMismatch("Attempting to run BFS with source $source in a graph with only $nv vertices."))
     parents = fill(-2, nv) #Initialize parents array with -2's.
     parents[source+1]=-1 #Set source to -1

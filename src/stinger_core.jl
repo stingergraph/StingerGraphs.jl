@@ -9,7 +9,8 @@ remove_edges!,
 insert_edges!,
 consistency_check,
 outdegree,
-getsuccessors
+getsuccessors,
+edgeweight
 
 if "STINGER_LIB_PATH" in keys(ENV)
     const stinger_core_lib = dlopen(joinpath(ENV["STINGER_LIB_PATH"],"libstinger_core"))
@@ -189,4 +190,14 @@ function getsuccessors(s::Stinger, src::Int64)
         typemax(Int64)
     )
     vertexneighbors
+end
+
+"Return the weight of the edge. If it doesn't exist return 0."
+function edgeweight(s::Stinger, src::Int64, dst::Int64, etype::Int64)
+    ccall(
+        dlsym(stinger_core_lib, "stinger_edgeweight"),
+        Int64,
+        (Ptr{Void}, Int64, Int64, Int64),
+        s, src, dst, etype
+    )
 end
