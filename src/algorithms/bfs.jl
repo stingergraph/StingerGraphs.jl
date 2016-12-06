@@ -16,9 +16,10 @@ function bfs(s::Stinger, source::Int64, nv::Int64)
     parents[source+1]=-1 #Set source to -1
     next = Vector{Int64}([source])
     sizehint!(next, nv)
+    successors = zeros(Int64, nv)
     while !isempty(next)
         src = shift!(next) #Get first element
-        vertexneighbors = getsuccessors(s, src)
+        vertexneighbors = getsuccessors(s, src, successors)
         for vertex in vertexneighbors
             #If not already set, and is not found in the queue.
             if parents[vertex+1]==-2
