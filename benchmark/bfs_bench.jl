@@ -18,7 +18,7 @@ function setupgraph(
 end
 
 function bfsbenchutil(s::Stinger, nv::Int64)
-    for i in 0:nv-1
+    for i in 0:1000
         bfs(s, i, nv)
     end
 end
