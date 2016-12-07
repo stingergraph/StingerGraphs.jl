@@ -19,9 +19,10 @@ function bfs(s::Stinger, source::Int64, nv::Int64)
     successors = zeros(Int64, nv)
     while !isempty(next)
         src = shift!(next) #Get first element
-        vertexneighbors = getsuccessors(s, src, successors)
-        for vertex in vertexneighbors
+        vertexneighbors = getsuccessors!(s, src, successors)
+        for i in 1:vertexneighbors
             #If not already set, and is not found in the queue.
+            vertex = successors[i]
             if parents[vertex+1]==-2
                 push!(next, vertex) #Push onto queue
                 parents[vertex+1] = src

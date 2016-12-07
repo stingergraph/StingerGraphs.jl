@@ -157,7 +157,7 @@ function outdegree(s::Stinger, src::Int64)
 end
 
 "Return a `Vector` of indices representing the successors of the source"
-function getsuccessors(s::Stinger, src::Int64, storage::Array{Int64})
+function getsuccessors!(s::Stinger, src::Int64, storage::Array{Int64})
     outdeg = Csize_t[0]
     ccall(
         dlsym(stinger_core_lib, "stinger_gather_successors"),
@@ -183,7 +183,8 @@ function getsuccessors(s::Stinger, src::Int64, storage::Array{Int64})
         C_NULL,
         typemax(Int64)
     )
-    return view(storage, 1:outdeg[1])
+    # return view(storage, 1:outdeg[1])
+    return outdeg[1]
 end
 
 "Return the weight of the edge. If it doesn't exist return 0."
