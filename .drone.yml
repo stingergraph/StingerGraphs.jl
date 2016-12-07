@@ -1,0 +1,8 @@
+pipeline:
+    build:
+      image: julia
+      environment:
+          - STINGER_LIB_PATH="$HOME/.julia/v0.5/StingerWrapper/deps/build.../lib/"
+      commands:
+          - build stinger
+          - bash test_script.sh
