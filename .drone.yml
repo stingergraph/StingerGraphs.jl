@@ -1,8 +1,5 @@
 pipeline:
     build:
-      image: julia
-      environment:
-          - STINGER_LIB_PATH="$HOME/.julia/v0.5/StingerWrapper/deps/build.../lib/"
+      image: rohitvarkey/stingerwrapper_dyno_bench
       commands:
-          - build stinger
-          - bash test_script.sh
+          - julia -e 'include("benchmark/bfs_bench.jl"); for i=10:20 bench(i,16) end'
