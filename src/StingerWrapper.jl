@@ -1,6 +1,7 @@
 module StingerWrapper
 
 # package code goes here
+include("stinger_lib.jl")
 include("stinger_graph.jl")
 include("stinger_core.jl")
 include("fields.jl")

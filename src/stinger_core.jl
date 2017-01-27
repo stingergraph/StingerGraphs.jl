@@ -1,8 +1,7 @@
-import Base.Libdl: dlopen, dlsym
+import Base.Libdl: dlsym
 import Base: unsafe_convert
 
 export Stinger,
-stinger_core_lib,
 remove_edge!,
 insert_edge!,
 remove_edges!,
@@ -11,13 +10,6 @@ consistency_check,
 outdegree,
 getsuccessors,
 edgeweight
-
-if "STINGER_LIB_PATH" in keys(ENV)
-    const stinger_core_lib = dlopen(joinpath(ENV["STINGER_LIB_PATH"],"libstinger_core"))
-else
-    const stinger_core_lib = dlopen("libstinger_core")
-end
-
 
 type Stinger
     handle::Ptr{Void}
