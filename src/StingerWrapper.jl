@@ -6,6 +6,7 @@ include("stinger_graph.jl")
 include("stinger_core.jl")
 include("fields.jl")
 include("algorithms/bfs.jl")
+include("algorithms/kcore.jl")
 include("generators/kronecker.jl")
 
 end # module
