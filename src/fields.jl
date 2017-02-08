@@ -1,5 +1,5 @@
 import Base: getindex, setindex!
-export get_nv
+export get_nv, storageptr
 
 function getindex(x::Stinger, field::StingerFields)
     idx = Int(field)
@@ -40,3 +40,6 @@ function get_nv(x::Stinger)
     nv==0 && return nv
     nv+1
 end
+
+"""Get a pointer to the storage array of Stinger"""
+storageptr(s::Stinger) = s.handle + sizeof(StingerGraph) + 5*sizeof(UInt64)

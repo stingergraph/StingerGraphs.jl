@@ -21,6 +21,9 @@ immutable StingerGraph
     ETA_start::Int64
     ebpool_start::Int64
     size_t::UInt
+
+    #cache_pad::Array{Int64}(5)
+    #storage - Zero sized array (use `storageptr` to get a pointer to this)
 end
 
 export max_nv, max_neblock, max_netypes, max_nvtypes, num_insertions, num_deletions,
