@@ -80,6 +80,8 @@
 84 };
 =#
 
+export foralledges, edgeparse, StingerEdge
+
 type StingerVertex
     vtype::Int64
     weight::Int64
@@ -109,6 +111,12 @@ type StingerEdgeBlock
     cache_pad::Int64
 end
 
+function edgeparse(edge::StingerEdge)
+    direction = edge.neighbor >> 61 #The first 2 bits denote the direction, 2 - out, 1 - in, 3 - both
+    neighbor = ~(7 << 61) & edge.neighbor
+    return direction, neighbor
+end
+
 function stinger_vertex_get(s::Stinger, v::Int64)
     vertices = convert(Ptr{StingerVertex}, storageptr(s) + sizeof(Int64)) #Read the StingerVertex array
     vertex = unsafe_load(vertices, v+1)
@@ -120,7 +128,7 @@ function stinger_vertex_edges_get(s::Stinger, v::Int64)
     vertex.edges
 end
 
-function foralledges(s::Stinger, v::Int64, f)
+function foralledges(f::Function, s::Stinger, v::Int64)
     storage = storageptr(s)
     ebpool = storage + s[ebpool_start] * (sizeof(UInt8))
     ebpool_priv_ptr = ebpool + sizeof(UInt64) * 2 #gcc seems to pad this
