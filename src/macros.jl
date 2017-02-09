@@ -45,6 +45,7 @@
         vweight_t   weight;     /**< Vertex weight */
         vdegree_t   inDegree;   /**< In-degree of the vertex */
         vdegree_t   outDegree;  /**< Out-degree of the vertex */
+        vdegree_t   degree; /**< Degree when counting both in an out edges */
         adjacency_t edges;	  /**< Reference to the adjacency structure for this vertex */
         #if defined(STINGER_VERTEX_KEY_VALUE_STORE)
             key_value_store_t attributes;
@@ -79,25 +80,13 @@
 84 };
 =#
 
-#Inspired from http://julia-programming-language.2336112.n4.nabble.com/How-to-generate-composite-types-with-a-macro-td15355.html
-"""Generates the definition for the C structure mapping."""
-macro genarraymapping(name, prefix, _type, size)
-    composite = "immutable $name;";
-    for i = 1:size
-        composite = composite*"$(prefix)_$i::$_type;"
-    end
-    composite = composite*"end"
-    esc(parse(composite))
-end
-
-
 type StingerVertex
     vtype::Int64
     weight::Int64
     indegree::Int64
     outdegree::Int64
+    degree::Int64
     edges::Int64
-    keyvaluestore::Int64 #Need this to parse correctly. Generate using a macro?
 end
 
 const NUMEDGEBLOCKS = 14
@@ -108,8 +97,6 @@ type StingerEdge
     timefirst::Int64
     timerecent::Int64
 end
-
-@genarraymapping("StingerEdgeBlockArray", "edge", "StingerEdge", 14) #generate stinger_edge array to map to
 
 type StingerEdgeBlock
     next::UInt64
@@ -142,10 +129,10 @@ function foralledges(s::Stinger, v::Int64, f)
         current_eb = unsafe_load(convert(Ptr{StingerEdgeBlock}, current_eb_ptr))
         src = current_eb.vertexid
         etype = current_eb.etype
-        for i=0:current_eb.high
-            current_edge = unsafe_load(convert(Ptr{StingerEdge}, current_eb_ptr+sizeof(StingerEdgeBlock)), i+1)
+        for i=1:current_eb.high
+            current_edge = unsafe_load(convert(Ptr{StingerEdge}, current_eb_ptr+sizeof(StingerEdgeBlock)), i)
             f(current_edge, src, etype)
         end
-        current_eb_ptr = current_eb_ptr + current_eb.next;
+        current_eb_ptr = ebpool_priv_ptr + current_eb.next;
     end
 end
