@@ -13,6 +13,6 @@ function foralledges(f::Function, s::Stinger, v::Int64)
             current_edge = unsafe_load(convert(Ptr{StingerEdge}, current_eb_ptr+sizeof(StingerEdgeBlock)), i)
             f(current_edge, src, etype)
         end
-        current_eb_ptr = ebpool_priv_ptr + current_eb.next;
+        current_eb_ptr = ebpool_priv_ptr + current_eb.next * (sizeof(StingerEdgeBlock) + sizeof(StingerEdge)*NUMEDGEBLOCKS);
     end
 end
