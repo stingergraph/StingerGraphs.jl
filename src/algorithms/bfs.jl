@@ -19,9 +19,6 @@ function bfs(s::Stinger, source::Int64, nv::Int64)
         src = shift!(next) #Get first element
         foralledges(s, src) do edge, src, etype
             direction, neighbor = edgeparse(edge)
-            if neighbor > nv
-                @show edge
-            end
             if (direction != 1 && parents[neighbor+1] == -2)
                 parents[neighbor+1] = src
                 push!(next, neighbor)
