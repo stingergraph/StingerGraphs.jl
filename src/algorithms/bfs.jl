@@ -10,7 +10,7 @@ function bfs(s::Stinger, source::Int64)
 end
 
 function bfs(s::Stinger, source::Int64, nv::Int64)
-    nv>source || throw(DimensionMismatch("Attempting to run BFS with source $source in a graph with only $nv vertices."))
+    #nv>source || throw(DimensionMismatch("Attempting to run BFS with source $source in a graph with only $nv vertices."))
     parents = fill(-2, nv) #Initialize parents array with -2's.
     parents[source+1] = -1 #Set source to -1
     next = Vector{Int64}([source])
