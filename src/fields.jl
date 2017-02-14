@@ -44,7 +44,7 @@ end
 """Get a pointer to the storage array of Stinger"""
 storageptr(s::Stinger) = s.handle + sizeof(StingerGraph) + 5*sizeof(UInt64)
 
-type StingerVertex
+immutable StingerVertex
     vtype::Int64
     weight::Int64
     indegree::Int64
@@ -55,14 +55,14 @@ end
 
 const NUMEDGEBLOCKS = 14
 
-type StingerEdge
+immutable StingerEdge
     neighbor::Int64
     weight::Int64
     timefirst::Int64
     timerecent::Int64
 end
 
-type StingerEdgeBlock
+immutable StingerEdgeBlock
     next::UInt64
     etype::Int64
     vertexid::Int64
