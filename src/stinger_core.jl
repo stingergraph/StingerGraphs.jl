@@ -20,6 +20,12 @@ type Stinger
         finalizer(s, stinger_free)
         s
     end
+
+    function Stinger(config::StingerConfig)
+        s = new(ccall(dlsym(stinger_core_lib, "stinger_new_full"), Ptr{Void}, (Ptr{StingerConfig},), pointer_from_objref(config)))
+        finalizer(s, stinger_free)
+        s
+    end
 end
 
 unsafe_convert{T}(::Type{Ptr{T}}, s::Stinger) = s.handle
