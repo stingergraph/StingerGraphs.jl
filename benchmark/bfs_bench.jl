@@ -36,7 +36,24 @@ function bench(
     info("Running BFS benchmark")
     bfs_trial = run(bfs_bench)
     jldopen(filename, "w") do f
-        write(f, "bfs_trial", bfs_trial)
+        write(f, "bfs_trial_$(scale)_$(edgefactor)", bfs_trial)
     end
     bfs_trial
+end
+
+function benchgroup(
+        scales::Range{Int64},
+        edgefactor::Int64;
+        a::Float64=0.57,
+        b::Float64=0.19,
+        c::Float64 = 0.19,
+        filename::String="bfs_bench_group.jld"
+    )
+    jldopen(filename, "w") do f
+        for scale in scales
+            bfs_trial = bench(scale, edgefactor, a=a, b=b, c=c)
+            write(f, "bfs_trial_$(scale)_$(edgefactor)", bfs_trial)
+        end
+    end
+    filename
 end
