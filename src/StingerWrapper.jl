@@ -8,6 +8,7 @@ include("fields.jl")
 include("traversal.jl")
 
 include("algorithms/bfs.jl")
+include("algorithms/parallelbfs.jl")
 include("algorithms/kcore.jl")
 include("generators/kronecker.jl")
 
