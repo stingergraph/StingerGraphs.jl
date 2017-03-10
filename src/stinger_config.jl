@@ -1,4 +1,4 @@
-export StingerConfig, stingerconfig
+export StingerConfig, stingerconfig, generateconfig
 
 immutable StingerConfig
     nv::Int64
@@ -12,7 +12,7 @@ immutable StingerConfig
 end
 
 function stingerconfig(
-    ;nv::Int64=0, nebs::Int64=0, netypes::Int64=0, nvtypes::Int64=0,
+    nv::Int64; nebs::Int64=0, netypes::Int64=0, nvtypes::Int64=0,
     memory_size::Int64=0, no_map_none_etype::Int64=0, no_map_none_vtype::Int64=0,
     no_resize::Int64=0)
     StingerConfig(nv, nebs, netypes, nvtypes, memory_size, no_map_none_etype, no_map_none_vtype, no_resize)
@@ -35,10 +35,8 @@ function namessize(ntypes::Int64)
 end
 
 function generateconfig(nv::Int64; netypes::Int64=1, nvtypes::Int64=1)
-    ##TODO :Find the exact sizeof and remove 64*3 etc
-    #FIXME: Does not work nicely
     sz = maxmemsize() * 0.5 - (verticessize(nv)  + physmapsize(nv) +
-        namessize(netypes) + namessize(nvtypes) + 8 * 3 + 8 * 3)
-    nebs = floor(Int, sz / (64 + 8))
-    return stingerconfig(nv=nv, nebs=nebs, netypes=netypes, nvtypes=nvtypes, no_resize=1)
+        namessize(netypes) + namessize(nvtypes) + 16 + 16)
+    nebs = floor(Int, sz / (512 + 8))
+    return stingerconfig(nv, nebs=nebs, netypes=netypes, nvtypes=nvtypes, no_resize=1)
 end
