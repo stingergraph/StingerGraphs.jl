@@ -6,6 +6,8 @@ type StingerLG{T} <: AbstractGraph
     nv::T
 end
 
+StingerLG() = StingerLG(Stinger(), 0)
+
 function add_edge!(s::StingerLG, e::LightGraphs.SimpleGraphs.SimpleEdge)
     insert_edge!(s.s, 0, e.src, e.dst, 0, 0)
 end
