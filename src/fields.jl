@@ -73,6 +73,11 @@ immutable StingerEdgeBlock
     cache_pad::Int64
 end
 
+immutable StingerEdgeArray
+    length::Int64
+    high::Int64
+end
+
 function edgeparse(edge::StingerEdge)
     direction = edge.neighbor >> 61 #The first 2 bits denote the direction, 1 - in, 2 - out, 3 - both
     neighbor = ~(7 << 61) & edge.neighbor
@@ -88,4 +93,8 @@ end
 function getvertexedgesoffset(s::Stinger, v::Int64)
     vertex = stinger_vertex_get(s,v)
     vertex.edges
+end
+
+function ETAptr(s::Stinger, etype::Int64)
+    ETA_ptr = storageptr(s) + s[ETA_start] + etype * (sizeof(StingerEdgeArray) + NUMEDGEBLOCKS*sizeof(Int64))
 end

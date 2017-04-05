@@ -13,4 +13,6 @@ include("algorithms/parallelbfs.jl")
 include("algorithms/kcore.jl")
 include("generators/kronecker.jl")
 
+include("lg/lg.jl")
+
 end # module
