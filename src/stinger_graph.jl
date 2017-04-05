@@ -33,6 +33,8 @@ ETA_start, ebpool_start, size_t
 
 const stingergraphfields = fieldnames(StingerGraph)
 
+@enum StingerFields max_nv=1 max_neblock=2 max_netypes=3 max_nvtypes=4 num_insertions=5 num_deletions=6 num_insertions_last_batch=7 num_deletions_last_batch=8 batch_time=9 update_time=10 queue_size=11 dropped_batches=12 vertices_start=13 physmap_start=14 etype_names_start=15 vtype_names_start=16 ETA_start=17 ebpool_start=18 size_t=19
+#=
 """
 Generates an Enumeration of all fields in `StingerGraph`.
 The generated fields are of type `StingerFields`.
@@ -46,3 +48,4 @@ macro createfieldenums()
 end
 
 @createfieldenums()
+=#
