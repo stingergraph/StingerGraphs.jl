@@ -1,3 +1,7 @@
+export StingerLGEdge, StingerEdgeIterator
+
+import Base: start, done, next
+
 struct StingerLGEdge <: AbstractEdge
     src::Int64
     dst::Int64
@@ -13,7 +17,7 @@ struct StingerEdgeIterator
     s::Stinger
 end
 
-struct StingerEdgeIteratorState
+mutable struct StingerEdgeIteratorState
     ebpool_priv_ptr::Ptr{Void}
     current_eb_ptr::Ptr{Void}
     current_eb::StingerEdgeBlock
@@ -58,7 +62,7 @@ function next(iterator::StingerEdgeIterator, state::StingerEdgeIteratorState)
         convert(Ptr{StingerEdge}, state.current_eb_ptr+sizeof(StingerEdgeBlock)),
         state.current_eb_edge_idx
     )
-    parsededge = createedge(rawedge, current_eb.vertexid)
+    parsededge = createedge(rawedge, state.current_eb.vertexid)
     #Now set the state to the next edge
     state.current_eb_edge_idx+=1
     #Check if edgeblock completed
@@ -69,7 +73,7 @@ function next(iterator::StingerEdgeIterator, state::StingerEdgeIteratorState)
             state.etype+=1
             if (state.etype == state.netypes)
                 #Termination condition
-                return parsededge
+                return (parsededge, state)
             end
             #Update ETA state
             state.current_ETA_index=1
@@ -83,9 +87,9 @@ function next(iterator::StingerEdgeIterator, state::StingerEdgeIteratorState)
                 convert(Ptr{UInt64}, state.ETA_ptr+sizeof(StingerEdgeArray)),
                 state.current_ETA_index
             ) * (sizeof(StingerEdgeBlock) + sizeof(StingerEdge)*NUMEDGEBLOCKS)
-        state.current_eb = unsafe_load(convert(Ptr{StingerEdgeBlock}, current_eb_ptr))
+        state.current_eb = unsafe_load(convert(Ptr{StingerEdgeBlock}, state.current_eb_ptr))
     end
-    return parsededge
+    return (parsededge, state)
 end
 
 function createedge(rawedge::StingerEdge, src::Int64)
