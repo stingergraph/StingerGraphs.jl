@@ -1,7 +1,12 @@
 import Base: start, done, next
 
+abstract type AbstractStingerEdgeIterator end
+
+eltype(::Type{AbstractStingerEdgeIterator}) = StingerLGEdge
+iteratorsize(::Type{AbstractStingerEdgeIterator}) = Base.SizeUnknown()
+
 """To  iterator over an EdgeBlock"""
-struct EdgeBlockIterator
+struct EdgeBlockIterator <: AbstractStingerEdgeIterator
     current_eb_ptr::Ptr{Void}
     current_eb::StingerEdgeBlock
 end
@@ -60,7 +65,7 @@ function next(iter::EdgeBlockIterator, state::EdgeBlockIteratorState)
     )
 end
 
-struct StingerEdgeIterator
+struct StingerEdgeIterator <: AbstractStingerEdgeIterator
     s::Stinger
     ebpool_priv_ptr::Ptr{Void}
     netypes::Int64
@@ -177,7 +182,7 @@ function next(iter::StingerEdgeIterator, state::StingerEdgeIteratorState)
     )
 end
 
-struct StingerDirectedEdgesIterator
+struct StingerDirectedEdgesIterator <: AbstractStingerEdgeIterator
     edgeiter::StingerEdgeIterator
     direction::Int64
 end
