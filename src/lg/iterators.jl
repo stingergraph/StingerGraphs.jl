@@ -176,3 +176,28 @@ function next(iter::StingerEdgeIterator, state::StingerEdgeIteratorState)
         )
     )
 end
+
+struct StingerDirectedEdgesIterator
+    edgeiter::StingerEdgeIterator
+    direction::Int64
+end
+
+function start(iter::StingerDirectedEdgesIterator)
+    state = start(iter.edgeiter)
+    while(!done(iter.edgeiter, state) && xor(state.eb_iterator_state.current_edge.direction,iter.direction)==3)
+        (_, state) = next(iter.edgeiter, state)
+    end
+    state
+end
+
+function next(iter::StingerDirectedEdgesIterator, state::StingerEdgeIteratorState)
+    current_edge, state = next(iter.edgeiter, state)
+    while(!done(iter.edgeiter, state) && xor(state.eb_iterator_state.current_edge.direction,iter.direction)==3)
+        edge, state = next(iter.edgeiter, state)
+    end
+    (current_edge, state)
+end
+
+function done(iter::StingerDirectedEdgesIterator, state::StingerEdgeIteratorState)
+    done(iter.edgeiter, state)
+end
