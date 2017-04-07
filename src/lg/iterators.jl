@@ -206,3 +206,52 @@ end
 function done(iter::StingerDirectedEdgesIterator, state::StingerEdgeIteratorState)
     done(iter.edgeiter, state)
 end
+
+struct StingerVertexEdgeIterator <: AbstractStingerEdgeIterator
+    ebpool_priv_ptr::Ptr{Void}
+    vertex::StingerVertex
+end
+
+function StingerVertexEdgeIterator(s::Stinger, src::Int64)
+    ebpool_priv_ptr = storageptr(s) + s[ebpool_start] * (sizeof(UInt8)) + sizeof(UInt64) * 2
+    vertex = getvertex(s, src)
+    StingerVertexEdgeIterator(
+        ebpool_priv_ptr,
+        vertex
+    )
+end
+
+struct StingerVertexEdgeIteratorState
+    eb_iter::EdgeBlockIterator
+    eb_state::EdgeBlockIteratorState
+end
+
+function start(iter::StingerVertexEdgeIterator)
+    current_eb_ptr = iter.ebpool_priv_ptr + iter.vertex.edges * (sizeof(StingerEdgeBlock) + sizeof(StingerEdge)*NUMEDGEBLOCKS)
+    current_eb = unsafe_load(convert(Ptr{StingerEdgeBlock}, current_eb_ptr))
+    eb_iter = EdgeBlockIterator(current_eb_ptr, current_eb)
+    eb_state = start(eb_iter)
+    while (iter.ebpool_priv_ptr != eb_iter.current_eb_ptr && done(eb_iter, eb_state))
+        current_eb_ptr = iter.ebpool_priv_ptr + eb_iter.current_eb.next * (sizeof(StingerEdgeBlock) + sizeof(StingerEdge)*NUMEDGEBLOCKS)
+        current_eb = unsafe_load(convert(Ptr{StingerEdgeBlock}, current_eb_ptr))
+        eb_iter = EdgeBlockIterator(current_eb_ptr, current_eb)
+        eb_state = start(eb_iter)
+    end
+    StingerVertexEdgeIteratorState(eb_iter, eb_state)
+end
+
+function done(iter::StingerVertexEdgeIterator, state::StingerVertexEdgeIteratorState)
+    iter.ebpool_priv_ptr == state.eb_iter.current_eb_ptr
+end
+
+function next(iter::StingerVertexEdgeIterator, state::StingerVertexEdgeIteratorState)
+    current_edge, eb_state = next(state.eb_iter, state.eb_state)
+    eb_iter = state.eb_iter
+    while (iter.ebpool_priv_ptr != eb_iter.current_eb_ptr && done(eb_iter, eb_state))
+        current_eb_ptr = iter.ebpool_priv_ptr + eb_iter.current_eb.next * (sizeof(StingerEdgeBlock) + sizeof(StingerEdge)*NUMEDGEBLOCKS)
+        current_eb = unsafe_load(convert(Ptr{StingerEdgeBlock}, current_eb_ptr))
+        eb_iter = EdgeBlockIterator(current_eb_ptr, current_eb)
+        eb_state = start(eb_iter)
+    end
+    (current_edge, StingerVertexEdgeIteratorState(eb_iter, eb_state))
+end
