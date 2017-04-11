@@ -16,8 +16,6 @@ function rem_edge!(s::StingerLG, e::LightGraphs.SimpleGraphs.SimpleEdge)
     remove_edge!(s.s, 0, e.src, e.dst)
 end
 
-#QUESTION: Should I look at changing the stinger config for these?
-
 function add_vertex!(s::StingerLG)
     if (s.nv + 1 < s.s[max_nv])
         s.nv+=1
