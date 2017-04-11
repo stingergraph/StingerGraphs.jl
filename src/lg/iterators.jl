@@ -9,6 +9,7 @@ iteratorsize(::Type{AbstractStingerEdgeIterator}) = Base.SizeUnknown()
 struct EdgeBlockIterator <: AbstractStingerEdgeIterator
     current_eb_ptr::Ptr{Void}
     current_eb::StingerEdgeBlock
+    dir::Int64
 end
 
 struct EdgeBlockIteratorState
@@ -23,7 +24,7 @@ function start(iter::EdgeBlockIterator)
             convert(Ptr{StingerEdge}, iter.current_eb_ptr+sizeof(StingerEdgeBlock)),
             init_eb_edge_idx
         )
-        if rawedge.neighbor >= 0
+        if rawedge.neighbor >=0 && xor(rawedge.neighbor>>61, iter.dir) != 3
             #Set state on finding a valid edge
             return EdgeBlockIteratorState(
                 init_eb_edge_idx,
@@ -47,7 +48,7 @@ function next(iter::EdgeBlockIterator, state::EdgeBlockIteratorState)
             convert(Ptr{StingerEdge}, iter.current_eb_ptr+sizeof(StingerEdgeBlock)),
             edge_idx
         )
-        if rawedge.neighbor >= 0
+        if rawedge.neighbor >=0 && xor(rawedge.neighbor>>61, iter.dir) != 3
             #Set state on finding a valid edge
             return (
                 current_edge,
@@ -69,12 +70,17 @@ struct StingerEdgeIterator <: AbstractStingerEdgeIterator
     s::Stinger
     ebpool_priv_ptr::Ptr{Void}
     netypes::Int64
+    dir::Int64
+end
+
+function StingerEdgeIterator(s::Stinger, dir::Int64)
+    ebpool_priv_ptr = storageptr(s) + s[ebpool_start] * (sizeof(UInt8)) + sizeof(UInt64) * 2
+    netypes = s[max_netypes]
+    StingerEdgeIterator(s, ebpool_priv_ptr, netypes, dir)
 end
 
 function StingerEdgeIterator(s::Stinger)
-    ebpool_priv_ptr = storageptr(s) + s[ebpool_start] * (sizeof(UInt8)) + sizeof(UInt64) * 2
-    netypes = s[max_netypes]
-    StingerEdgeIterator(s, ebpool_priv_ptr, netypes)
+    StingerEdgeIterator(s, 3)
 end
 
 struct StingerEdgeIteratorState
@@ -93,12 +99,13 @@ function start(iter::StingerEdgeIterator)
         for current_ETA_index=1:current_ETA.high
             current_eb_ptr = iter.ebpool_priv_ptr +
                 unsafe_load(
-                    convert(Ptr{UInt64}, ETA_ptr+sizeof(StingerEdgeArray))
-                    ) *
-                    (sizeof(StingerEdgeBlock) + sizeof(StingerEdge)*NUMEDGEBLOCKS)
+                    convert(Ptr{UInt64}, ETA_ptr+sizeof(StingerEdgeArray)),
+                    current_ETA_index
+                ) *
+                (sizeof(StingerEdgeBlock) + sizeof(StingerEdge)*NUMEDGEBLOCKS)
             current_eb = unsafe_load(convert(Ptr{StingerEdgeBlock}, current_eb_ptr))
 
-            eb_iterator = EdgeBlockIterator(current_eb_ptr, current_eb)
+            eb_iterator = EdgeBlockIterator(current_eb_ptr, current_eb, iter.dir)
             eb_iterator_state = start(eb_iterator)
             if(!(done(eb_iterator, eb_iterator_state)))
                 return StingerEdgeIteratorState(
@@ -117,7 +124,7 @@ function start(iter::StingerEdgeIterator)
         StingerEdgeArray(0, 0),
         0,
         iter.netypes,
-        EdgeBlockIterator(Ptr{Void}(0), StingerEdgeBlock(0, 0, 0, 0, 0, 0, 0, 0)),
+        EdgeBlockIterator(Ptr{Void}(0), StingerEdgeBlock(0, 0, 0, 0, 0, 0, 0, 0), iter.dir),
         EdgeBlockIteratorState(0, StingerLGEdge(0, 0, 0, 0, 0, 0))
     )
 end
@@ -149,7 +156,7 @@ function next(iter::StingerEdgeIterator, state::StingerEdgeIteratorState)
                         StingerEdgeArray(0, 0),
                         0,
                         iter.netypes,
-                        EdgeBlockIterator(Ptr{Void}(0), StingerEdgeBlock(0, 0, 0, 0, 0, 0, 0, 0)),
+                        EdgeBlockIterator(Ptr{Void}(0), StingerEdgeBlock(0, 0, 0, 0, 0, 0, 0, 0), iter.dir),
                         EdgeBlockIteratorState(0, StingerLGEdge(0, 0, 0, 0, 0, 0))
                     )
                 )
@@ -165,7 +172,7 @@ function next(iter::StingerEdgeIterator, state::StingerEdgeIteratorState)
             ) *
             (sizeof(StingerEdgeBlock) + sizeof(StingerEdge)*NUMEDGEBLOCKS)
         current_eb = unsafe_load(convert(Ptr{StingerEdgeBlock}, current_eb_ptr))
-        eb_iterator = EdgeBlockIterator(current_eb_ptr, current_eb)
+        eb_iterator = EdgeBlockIterator(current_eb_ptr, current_eb, iter.dir)
         eb_iterator_state = start(eb_iterator)
     end
 
@@ -182,42 +189,22 @@ function next(iter::StingerEdgeIterator, state::StingerEdgeIteratorState)
     )
 end
 
-struct StingerDirectedEdgesIterator <: AbstractStingerEdgeIterator
-    edgeiter::StingerEdgeIterator
-    direction::Int64
-end
-
-function start(iter::StingerDirectedEdgesIterator)
-    state = start(iter.edgeiter)
-    while(!done(iter.edgeiter, state) && xor(state.eb_iterator_state.current_edge.direction,iter.direction)==3)
-        (_, state) = next(iter.edgeiter, state)
-    end
-    state
-end
-
-function next(iter::StingerDirectedEdgesIterator, state::StingerEdgeIteratorState)
-    current_edge, state = next(iter.edgeiter, state)
-    while(!done(iter.edgeiter, state) && xor(state.eb_iterator_state.current_edge.direction,iter.direction)==3)
-        edge, state = next(iter.edgeiter, state)
-    end
-    (current_edge, state)
-end
-
-function done(iter::StingerDirectedEdgesIterator, state::StingerEdgeIteratorState)
-    done(iter.edgeiter, state)
-end
-
 struct StingerVertexEdgeIterator <: AbstractStingerEdgeIterator
     ebpool_priv_ptr::Ptr{Void}
     vertex::StingerVertex
+    dir::Int64
 end
 
 function StingerVertexEdgeIterator(s::Stinger, src::Int64)
+    StingerVertexEdgeIterator(s, src, 3)
+end
+function StingerVertexEdgeIterator(s::Stinger, src::Int64, dir::Int64)
     ebpool_priv_ptr = storageptr(s) + s[ebpool_start] * (sizeof(UInt8)) + sizeof(UInt64) * 2
     vertex = getvertex(s, src)
     StingerVertexEdgeIterator(
         ebpool_priv_ptr,
-        vertex
+        vertex,
+        dir
     )
 end
 
@@ -229,28 +216,28 @@ end
 function start(iter::StingerVertexEdgeIterator)
     current_eb_ptr = iter.ebpool_priv_ptr + iter.vertex.edges * (sizeof(StingerEdgeBlock) + sizeof(StingerEdge)*NUMEDGEBLOCKS)
     current_eb = unsafe_load(convert(Ptr{StingerEdgeBlock}, current_eb_ptr))
-    eb_iter = EdgeBlockIterator(current_eb_ptr, current_eb)
+    eb_iter = EdgeBlockIterator(current_eb_ptr, current_eb, iter.dir)
     eb_state = start(eb_iter)
-    while (iter.ebpool_priv_ptr != eb_iter.current_eb_ptr && done(eb_iter, eb_state))
+    while (eb_iter.current_eb.next!=0 && done(eb_iter, eb_state))
         current_eb_ptr = iter.ebpool_priv_ptr + eb_iter.current_eb.next * (sizeof(StingerEdgeBlock) + sizeof(StingerEdge)*NUMEDGEBLOCKS)
         current_eb = unsafe_load(convert(Ptr{StingerEdgeBlock}, current_eb_ptr))
-        eb_iter = EdgeBlockIterator(current_eb_ptr, current_eb)
+        eb_iter = EdgeBlockIterator(current_eb_ptr, current_eb, iter.dir)
         eb_state = start(eb_iter)
     end
     StingerVertexEdgeIteratorState(eb_iter, eb_state)
 end
 
 function done(iter::StingerVertexEdgeIterator, state::StingerVertexEdgeIteratorState)
-    iter.ebpool_priv_ptr == state.eb_iter.current_eb_ptr
+    state.eb_iter.current_eb.next==0 && done(state.eb_iter, state.eb_state)
 end
 
 function next(iter::StingerVertexEdgeIterator, state::StingerVertexEdgeIteratorState)
     current_edge, eb_state = next(state.eb_iter, state.eb_state)
     eb_iter = state.eb_iter
-    while (iter.ebpool_priv_ptr != eb_iter.current_eb_ptr && done(eb_iter, eb_state))
+    while (eb_iter.current_eb.next!=0 && done(eb_iter, eb_state))
         current_eb_ptr = iter.ebpool_priv_ptr + eb_iter.current_eb.next * (sizeof(StingerEdgeBlock) + sizeof(StingerEdge)*NUMEDGEBLOCKS)
         current_eb = unsafe_load(convert(Ptr{StingerEdgeBlock}, current_eb_ptr))
-        eb_iter = EdgeBlockIterator(current_eb_ptr, current_eb)
+        eb_iter = EdgeBlockIterator(current_eb_ptr, current_eb, iter.dir)
         eb_state = start(eb_iter)
     end
     (current_edge, StingerVertexEdgeIteratorState(eb_iter, eb_state))
