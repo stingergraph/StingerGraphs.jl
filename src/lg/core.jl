@@ -1,5 +1,9 @@
 using LightGraphs
-import LightGraphs: AbstractGraph
+
+import LightGraphs: AbstractGraph, add_edge!, rem_edge!, add_vertex!, add_vertices!,
+    rem_vertex!, zero, is_directed
+
+export StingerLG
 
 type StingerLG{T} <: AbstractGraph
     s::Stinger
@@ -46,3 +50,7 @@ end
 function zero(s::StingerLG)
     StingerLG(Stinger(), 0)
 end
+
+is_directed(g::StingerLG) = true
+is_directed(::Type{StingerLG}) = true
+is_directed(g::Type{StingerLG{T}}) where T = true

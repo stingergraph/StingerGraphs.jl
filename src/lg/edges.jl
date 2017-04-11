@@ -1,6 +1,7 @@
 export StingerLGEdge, StingerEdgeIterator
 
 import Base: reverse, ==, convert
+import LightGraphs: src, dst, reverse
 
 struct StingerLGEdge <: AbstractEdge
     src::Int64
@@ -49,6 +50,9 @@ function convert(::Type{Tuple}, edge::StingerLGEdge)
         return (edge.src, edge.dst)
     end
 end
+
+StingerLGEdge(t::Tuple) = StingerLGEdge(t[1], t[2], 2, 0, 0, 0)
+StingerLGEdge(p::Pair) = StingerLGEdge(p.first, p.second, 2, 0, 0, 0)
 
 function createedge(rawedge::StingerEdge, src::Int64)
     direction, neighbor = edgeparse(rawedge)

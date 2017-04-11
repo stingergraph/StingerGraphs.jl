@@ -1,3 +1,5 @@
+import LightGraphs: nv, ne, vertices, edges, neighbors, in_neighbors, out_neighbors, hasvertex, hasedge
+
 function nv(g::StingerLG)
     g.nv
 end
