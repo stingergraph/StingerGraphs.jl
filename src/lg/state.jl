@@ -1,4 +1,5 @@
-import LightGraphs: nv, ne, vertices, edges, neighbors, in_neighbors, out_neighbors, hasvertex, hasedge
+import LightGraphs: nv, ne, vertices, edges, neighbors, in_neighbors, out_neighbors,
+    has_vertex, has_edge, has_self_loops
 
 function nv(g::StingerLG)
     g.nv
@@ -37,11 +38,11 @@ function out_neighbors(g::StingerLG, src::Int64)
     neighbors(g, src, 2)
 end
 
-function hasvertex(g::StingerLG, v::Int64)
+function has_vertex(g::StingerLG, v::Int64)
     v <= g.nv
 end
 
-function hasedge(g::StingerLG, e::StingerLGEdge)
+function has_edge(g::StingerLG, e::StingerLGEdge)
     for edge in StingerVertexEdgeIterator(g.s, e.src-1, e.direction)
         if edge == e
             return true
@@ -50,6 +51,8 @@ function hasedge(g::StingerLG, e::StingerLGEdge)
     return false
 end
 
-function hasedge(g::StingerLG, src::Int64, dst::Int64, dir::Int64)
-    hasedge(g, StingerLGEdge(src, dst, dir, 0, 0, 0))
+function has_edge(g::StingerLG, src::Int64, dst::Int64, dir::Int64)
+    has_edge(g, StingerLGEdge(src, dst, dir, 0, 0, 0))
 end
+
+has_self_loops(g::StingerLG) = false

@@ -1,7 +1,6 @@
-using LightGraphs
-
 import LightGraphs: AbstractGraph, add_edge!, rem_edge!, add_vertex!, add_vertices!,
     rem_vertex!, zero, is_directed
+import LightGraphs.SimpleGraphs: SimpleEdge
 
 export StingerLG
 
@@ -12,11 +11,11 @@ end
 
 StingerLG() = StingerLG(Stinger(), 0)
 
-function add_edge!(s::StingerLG, e::LightGraphs.SimpleGraphs.SimpleEdge)
+function add_edge!(s::StingerLG, e::SimpleEdge)
     insert_edge!(s.s, 0, e.src, e.dst, 0, 0)
 end
 
-function rem_edge!(s::StingerLG, e::LightGraphs.SimpleGraphs.SimpleEdge)
+function rem_edge!(s::StingerLG, e::SimpleEdge)
     remove_edge!(s.s, 0, e.src, e.dst)
 end
 
@@ -53,4 +52,3 @@ end
 
 is_directed(g::StingerLG) = true
 is_directed(::Type{StingerLG}) = true
-is_directed(g::Type{StingerLG{T}}) where T = true

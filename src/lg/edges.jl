@@ -1,7 +1,7 @@
 export StingerLGEdge, StingerEdgeIterator
 
 import Base: reverse, ==, convert
-import LightGraphs: src, dst, reverse
+import LightGraphs: AbstractEdge, src, dst, reverse
 
 struct StingerLGEdge <: AbstractEdge
     src::Int64
