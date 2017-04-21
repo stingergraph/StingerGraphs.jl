@@ -199,3 +199,16 @@ function edgeweight(s::Stinger, src::Int64, dst::Int64, etype::Int64)
         s, src, dst, etype
     )
 end
+
+function dyno_set_initial_edges(s::Stinger, edges::Vector{Tuple{Int64, Int64, Int64, Int64}})
+    stingeredges = map(x->StingerEdge(x[1], x[2], x[3], x[4]), edges)
+    ccall(
+        dlsym(dyno_stinger_utils_lib, "dynograph_init_stinger_from_edge_list"),
+        Void,
+        (Ptr{Void}, Ptr{Void}, Int64),
+        s,
+        edges,
+        size(edges,1)
+    )
+end
+
