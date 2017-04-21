@@ -10,7 +10,7 @@ consistency_check,
 outdegree,
 getsuccessors,
 edgeweight,
-dyno_set_initial_edges
+dyno_set_initial_edges!
 
 type Stinger
     handle::Ptr{Void}
@@ -201,8 +201,8 @@ function edgeweight(s::Stinger, src::Int64, dst::Int64, etype::Int64)
     )
 end
 
-function dyno_set_initial_edges(s::Stinger, edges::Vector{Tuple{Int64, Int64, Int64, Int64}})
-    stingeredges = map(x->StingerEdge(x[1], x[2], x[3], x[4]), edges)
+function dyno_set_initial_edges!(s::Stinger, edges::Array{Int64, 2})
+    stingeredges = map(i->StingerEdge(edges[i, 1], edges[i, 2], edges[i, 3], edges[i, 4]), 1:size(edges,1))
     ccall(
         dlsym(dyno_stinger_utils_lib, "dynograph_init_stinger_from_edge_list"),
         Void,
