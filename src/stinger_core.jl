@@ -9,7 +9,8 @@ insert_edges!,
 consistency_check,
 outdegree,
 getsuccessors,
-edgeweight
+edgeweight,
+dyno_set_initial_edges
 
 type Stinger
     handle::Ptr{Void}
