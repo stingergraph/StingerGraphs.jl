@@ -202,14 +202,21 @@ function edgeweight(s::Stinger, src::Int64, dst::Int64, etype::Int64)
 end
 
 function dyno_set_initial_edges!(s::Stinger, edges::Array{Int64, 2})
-    stingeredges = map(i->StingerEdge(edges[i, 1], edges[i, 2], edges[i, 3], edges[i, 4]), 1:size(edges,1))
+    stingeredges = unique(sort(
+            map(
+                i->StingerEdge(edges[i, 1], edges[i, 2], edges[i, 3], edges[i, 4]),
+                1:size(edges,1)
+            ),
+            by=x->x.neighbor
+        )
+    )
     ccall(
         dlsym(dyno_stinger_utils_lib, "dynograph_init_stinger_from_edge_list"),
         Void,
         (Ptr{Void}, Ptr{Void}, Int64),
         s,
-        edges,
-        size(edges,1)
+        stingeredges,
+        size(stingeredges,1)
     )
 end
 
