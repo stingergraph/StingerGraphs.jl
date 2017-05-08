@@ -4,7 +4,7 @@ import Base: push!, shift!, isempty, getindex
 
 using UnsafeAtomics
 
-export ThreadQueue, LevelSynchronous, bfs
+export ThreadQueue, LevelSynchronous, AtomicBFS, bfs
 
 immutable ThreadQueue{T}
     data::Vector{T}
@@ -41,6 +41,7 @@ end
 
 abstract BFSAlgorithm
 type LevelSynchronous <: BFSAlgorithm end
+type AtomicBFS <: BFSAlgorithm end
 
 function bfskernel(
         alg::LevelSynchronous, s::Stinger, next::ThreadQueue, parents::Array{Int64},
@@ -59,6 +60,29 @@ function bfskernel(
     end
 end
 
+function bfskernel(
+        alg::AtomicBFS, s::Stinger, next::ThreadQueue, parents::Array{Atomic{Int64}},
+        level::Array{Int64}
+    )
+    @threads for src in level
+        foralledges(s, src) do edge, src, etype
+            direction, neighbor = edgeparse(edge)
+            if (direction != 1)
+                parent = Threads.atomic_cas!(parents[neighbor+1], -2, src)
+                if parent==-2
+                    push!(next, neighbor) #Push onto queue
+                end
+            end
+        end
+    end
+end
+
+function bfs(alg::AtomicBFS, s::Stinger, source::Int64, nv::Int64)
+    next = ThreadQueue(Int, nv)
+    parents = [Atomic{Int64}(-2) for i=1:nv]
+    bfs(alg, s, next, source, parents)
+end
+
 function bfs(alg::LevelSynchronous, s::Stinger, source::Int64, nv::Int64)
     next = ThreadQueue(Int, nv)
     parents = fill(-2, nv)
@@ -70,6 +94,20 @@ function bfs(
         parents::Array{Int64}
     )
     parents[source+1]=-1 #Set source to -1
+    push!(next, source)
+    while !isempty(next)
+        level = next[next.head[]:next.tail[]-1]
+        next.head[] = next.tail[] #reset the queue
+        bfskernel(alg, s, next, parents, level)
+    end
+    return parents
+end
+
+function bfs(
+        alg::AtomicBFS, s::Stinger, next::ThreadQueue, source::Int64,
+        parents::Array{Atomic{Int64}}
+    )
+    parents[source+1][]=-1 #Set source to -1
     push!(next, source)
     while !isempty(next)
         level = next[next.head[]:next.tail[]-1]

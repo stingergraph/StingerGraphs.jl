@@ -23,6 +23,12 @@ function bfsbenchutil(s::Stinger, nv::Int64)
     end
 end
 
+function getsuccessorsbfsbenchutil(s::Stinger, nv::Int64)
+    for i in 0:1000
+        getsuccessorsbfs(s, i, nv)
+    end
+end
+
 function bench(
     scale::Int64,
     edgefactor::Int64;
@@ -33,12 +39,14 @@ function bench(
     )
     nv = 2^scale
     bfs_bench = @benchmarkable bfsbenchutil(s, $nv) seconds=10 setup=(s=setupgraph($scale, $edgefactor))
+    getsuccessors_bfs_bench = @benchmarkable getsuccessorsbfsbenchutil(s, $nv) seconds=10 setup=(s=setupgraph($scale, $edgefactor))
     info("Running BFS benchmark")
     bfs_trial = run(bfs_bench)
+    getsuccessorsbfs_trial = run(getsuccessors_bfs_bench)
     jldopen(filename, "w") do f
         write(f, "bfs_trial_$(scale)_$(edgefactor)", bfs_trial)
     end
-    bfs_trial
+    bfs_trial, getsuccessorsbfs_trial
 end
 
 function benchgroup(

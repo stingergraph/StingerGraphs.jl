@@ -1,4 +1,4 @@
-export bfs, bfsdistances
+export bfs, bfsdistances, getsuccessorsbfs
 
 """
 This version is slower as it allocates the maximum possible vertices in the Stinger
@@ -20,6 +20,13 @@ function bfs(s::Stinger, source::Int64, nv::Int64)
     bfskernel(s, source, nv)
 end
 
+function getsuccessorsbfs(s::Stinger, source::Int64, nv::Int64)
+    if source>=nv
+        return zeros(Int64, 0)
+    end
+    getsuccessorsbfskernel(s, source, nv)
+end
+
 function bfskernel(s::Stinger, source::Int64, nv::Int64)
     parents = fill(-2, nv) #Initialize parents array with -2's.
     parents[source+1] = -1 #Set source to -1
@@ -38,6 +45,23 @@ function bfskernel(s::Stinger, source::Int64, nv::Int64)
     parents
 end
 
+function getsuccessorsbfskernel(s::Stinger, source::Int64, nv::Int64)
+    parents = fill(-2, nv) #Initialize parents array with -2's.
+    parents[source+1] = -1 #Set source to -1
+    next = Vector{Int64}([source])
+    sizehint!(next, nv)
+    while !isempty(next)
+        src = shift!(next) #Get first element
+        neighbors = getsuccessors(s, src)
+        for neighbor in neighbors
+            if (parents[neighbor+1] == -2)
+                parents[neighbor+1] = src
+                push!(next, neighbor)
+            end
+        end
+    end
+    parents
+end
 """
 This version is slower as it allocates the maximum possible vertices in the Stinger
 graph. If you know the maximum number of active vertices, call `bfsdistances(s, source, nv)`
