@@ -39,7 +39,7 @@ function getindex{T}(q::ThreadQueue{T}, iter)
     return q.data[iter]
 end
 
-abstract BFSAlgorithm
+abstract type BFSAlgorithm end
 type LevelSynchronous <: BFSAlgorithm end
 
 function bfskernel(

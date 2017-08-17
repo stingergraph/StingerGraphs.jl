@@ -22,7 +22,7 @@ function kronecker(
 
     for ib in 1:scale
         ii_bit = rand(1, m) .> ab
-        jj_bit = rand(1, m) .> ( cnorm * ii_bit + anorm * !(ii_bit) )
+        jj_bit = rand(1, m) .> ( cnorm * ii_bit + anorm * .!(ii_bit) )
         ij = ij .+ 2^(ib-1) .* [ii_bit; jj_bit]
     end
 
