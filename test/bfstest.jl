@@ -1,4 +1,4 @@
-using StingerWrapper
+using StingerGraphs
 using Base.Test
 
 function bfsutil(scale::Int64, edgefactor::Int64)

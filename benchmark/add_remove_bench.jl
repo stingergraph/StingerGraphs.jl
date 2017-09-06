@@ -1,4 +1,4 @@
-using StingerWrapper
+using StingerGraphs
 using BenchmarkTools
 using JLD
 
