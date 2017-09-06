@@ -1,6 +1,6 @@
-# StingerWrapper
+# StingerGraphs
 
-[![Build Status](https://travis-ci.org/rohitvarkey/StingerWrapper.jl.svg?branch=master)](https://travis-ci.org/rohitvarkey/StingerWrapper.jl)
+[![Build Status](https://travis-ci.org/rohitvarkey/StingerGraphs.jl.svg?branch=master)](https://travis-ci.org/rohitvarkey/StingerGraphs.jl)
 
 This is a Julia wrapper around the [STINGER](https://github.com/stingergraph/stinger) library for processing streaming/dynamic graphs. This wrapper focuses on the `dev` branch of the stinger repository.
 

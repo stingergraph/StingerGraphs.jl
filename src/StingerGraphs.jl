@@ -1,4 +1,4 @@
-module StingerWrapper
+module StingerGraphs
 
 # package code goes here
 include("stinger_lib.jl")

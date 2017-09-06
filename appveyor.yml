@@ -28,7 +28,7 @@ build_script:
 # Need to convert from shallow to complete for Pkg.clone to work
   - IF EXIST .git\shallow (git fetch --unshallow)
   - C:\projects\julia\bin\julia -e "versioninfo();
-      Pkg.clone(pwd(), \"StingerWrapper\"); Pkg.build(\"StingerWrapper\")"
+      Pkg.clone(pwd(), \"StingerGraphs\"); Pkg.build(\"StingerGraphs\")"
 
 test_script:
-  - C:\projects\julia\bin\julia --check-bounds=yes -e "Pkg.test(\"StingerWrapper\")"
+  - C:\projects\julia\bin\julia --check-bounds=yes -e "Pkg.test(\"StingerGraphs\")"

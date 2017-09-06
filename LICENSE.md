@@ -1,4 +1,4 @@
-The StingerWrapper.jl package is licensed under the Simplified "2-clause" BSD License:
+The StingerGraphs.jl package is licensed under the Simplified "2-clause" BSD License:
 
 > Copyright (c) 2016: Rohit Varkey Thankachan.
 >
