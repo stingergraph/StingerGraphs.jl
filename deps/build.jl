@@ -18,11 +18,14 @@ provides(BuildProcess,
         CreateDirectory(joinpath(prefix, "lib"))
         @build_steps begin
             ChangeDirectory(stingerbuilddir)
-            FileRule(joinpath(prefix, "lib" , "libstinger_core.dylib"), @build_steps begin
-                `cmake ..`
-                `make`
-                `cp 'lib/libstinger_core.dylib' $prefix/lib/`
-                `cp 'lib/libstinger_alg.dylib' $prefix/lib/`
+            `cmake ..`
+            `make`
+            `ls lib/`
+            FileRule(joinpath(prefix, "lib" , "libstinger_core.$(Base.Libdl.dlext)"), @build_steps begin
+                `cp lib/libstinger_core.$(Base.Libdl.dlext) $prefix/lib/`
+            end)
+            FileRule(joinpath(prefix, "lib" , "libstinger_alg.$(Base.Libdl.dlext)"), @build_steps begin
+                `cp lib/libstinger_alg.$(Base.Libdl.dlext) $prefix/lib/`
             end)
         end
     end), [libstinger_core, libstinger_alg])
