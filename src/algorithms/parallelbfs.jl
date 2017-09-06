@@ -6,6 +6,9 @@ using UnsafeAtomics
 
 export ThreadQueue, LevelSynchronous, bfs
 
+"""
+A Queue with the head and tail guarded by Atomics.
+"""
 immutable ThreadQueue{T}
     data::Vector{T}
     head::Atomic{Int}
@@ -59,6 +62,9 @@ function bfskernel(
     end
 end
 
+"""
+Parallel BFS using the `LevelSynchronous` algorithms is done on the source node.
+"""
 function bfs(alg::LevelSynchronous, s::Stinger, source::Int64, nv::Int64)
     next = ThreadQueue(Int, nv)
     parents = fill(-2, nv)

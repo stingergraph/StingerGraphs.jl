@@ -22,7 +22,11 @@ function kcore!(s::Stinger, labels::Array{Int64}, counts::Array{Int64})
 end
 
 
-"Find the kcore of the graph."
+"""
+Finds the kcore of the graph. Uses the `kcore_find` function exposed by the C
+STINGER library.
+Returns the labels and the counts as two `Vector{Int64}`s.
+"""
 function kcore(s::Stinger, nv::Int64)
     labels = zeros(Int64, nv)
     counts = zeros(Int64, nv)
