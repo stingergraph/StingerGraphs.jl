@@ -36,6 +36,8 @@ end
 unsafe_convert{T}(::Type{Ptr{T}}, s::Stinger) = s.handle
 
 """
+    loadstingergraph(s::Stinger)
+
 Use this to get a `StingerGraph` representation of your `Stinger` graph. This
 representation will not be kept in sync with the graph. If you make changes,
 you will need to call this again to load the graph with the new attributes.
@@ -94,6 +96,8 @@ function Stinger(
 end
 
 """
+    remove_edge!(s::Stinger, etype::Int64, from::Int64, to::Int64)
+
 Removes the edge of type `etype` from `from` to `to` from the STINGER graph `s`.
 Raises an error in the edge was not found or if there was an error while
 removing the edge.
@@ -115,6 +119,11 @@ function remove_edge!(s::Stinger, etype::Int64, from::Int64, to::Int64)
 end
 
 """
+    insert_edge!(
+        s::Stinger, etype::Int64, from::Int64, to::Int64, weight::Int64,
+        timestamp::Int64
+    )
+
 Inserts an edge of type `etype` from `from` to `to` into the STINGER graph `s`
 with the specified `weight` and `timestamp`.
 Raises an error if the operation was not successful.
@@ -135,6 +144,8 @@ function insert_edge!(
 end
 
 """
+    insert_edges!(s::Stinger, edges::AbstractArray, numedges::Integer)
+
 Inserts `numedges` edges into the STINGER graph `s`.
 Input format is 5×numedges (etype, src, dst, weight, times).
 """
@@ -148,6 +159,8 @@ function insert_edges!(s::Stinger, edges::AbstractArray, numedges::Integer)
 end
 
 """
+    remove_edges!(s::Stinger, edges::AbstractArray, numedges::Integer)
+
 Removes `numedges` from the STINGER graph `s`.
 Input format is 5×numedges (etype, src, dst, weight, times) to make consistent
 with `insert_edges!`.
@@ -161,6 +174,8 @@ function remove_edges!(s::Stinger, edges::AbstractArray, numedges::Integer)
 end
 
 """
+    consistency_check(s::Stinger, nv::Int64)
+
 Runs a consistency check on the STINGER data structure.
 Returns `true` if the check passed and `false` if it fails.
 """
@@ -175,6 +190,8 @@ function consistency_check(s::Stinger, nv::Int64)
 end
 
 """
+    outdegree(s::Stinger, src::Int64)
+
 Returns the outdegree of vertex index.
 """
 function outdegree(s::Stinger, src::Int64)
@@ -188,6 +205,8 @@ function outdegree(s::Stinger, src::Int64)
 end
 
 """
+    getsuccessors(s::Stinger, src::Int64)
+
 Returns a `Vector` of indices representing the successors of `src`.
 """
 function getsuccessors(s::Stinger, src::Int64)
@@ -226,6 +245,8 @@ function getsuccessors(s::Stinger, src::Int64)
 end
 
 """
+    edgeweight(s::Stinger, src::Int64, dst::Int64, etype::Int64)
+
 Return the weight of the edge between `src` and `dst` of type `etype`.
 If it doesn't exist return 0.
 """

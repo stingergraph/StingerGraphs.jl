@@ -15,6 +15,10 @@ immutable StingerConfig
 end
 
 """
+    stingerconfig(
+        nv, nebs=0, netypes=0, nvtypes=0, memory_size=0, no_map_none_etype=0,
+        no_map_none_vtype=0, no_resize=0)
+
 Creates a `StingerConfig`.
 """
 function stingerconfig(
@@ -41,6 +45,8 @@ function namessize(ntypes::Int64)
 end
 
 """
+    generateconfig(nv::Int64; netypes::Int64=1, nvtypes::Int64=1)
+
 Generates a config for the specified number and types of vertices and the number
 of edge types. The generated config attempts to maximize the number of edge
 blocks that can be allocated.

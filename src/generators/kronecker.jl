@@ -1,6 +1,14 @@
 export kronecker
 
 """
+    kronecker(
+        scale::Int64,
+        edgefactor::Int64;
+        a::Float64=0.57,
+        b::Float64=0.19,
+        c::Float64=0.19
+    )
+
 Generates edges for a Kronecker generator graph. Returns an array of 2 rows
 with 1st being the start edge and 2nd row having the end edge.
 """

@@ -63,7 +63,10 @@ function bfskernel(
 end
 
 """
-Parallel BFS using the `LevelSynchronous` algorithms is done on the source node.
+    bfs(alg::LevelSynchronous, s::Stinger, source::Int64, nv::Int64)
+
+Uses the `LevelSynchronous` algorithm to perform a parallel BFS with the
+specified source node.
 """
 function bfs(alg::LevelSynchronous, s::Stinger, source::Int64, nv::Int64)
     next = ThreadQueue(Int, nv)

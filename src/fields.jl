@@ -2,6 +2,8 @@ import Base: getindex, setindex!
 export get_nv, getvertex, edgeparse, StingerEdge, StingerVertex
 
 """
+    getindex(x::Stinger, field::StingerFields)
+
 Obtain value of a field from the Stinger data structure.
 For `batch_time` and `update_time`, use `get_batchtime`
 and `get_updatetime` respectively.
@@ -26,6 +28,8 @@ function get_updatetime(x::Stinger)
 end
 
 """
+    setindex!(x::Stinger, val, field::StingerFields)
+
 Set value of a field from the Stinger data structure.
 """
 function setindex!(x::Stinger, val, field::StingerFields)
@@ -37,6 +41,8 @@ function setindex!(x::Stinger, val, field::StingerFields)
 end
 
 """
+    get_nv(x::Stinger)
+
 Returns number of active vertices in the graph. This is based on the largest
 vertex ID which has a non-zero indegree or outdegree.
 """
@@ -52,6 +58,8 @@ function get_nv(x::Stinger)
 end
 
 """
+    storageptr(s::Stinger)
+
 Get a pointer to the storage array of the STINGER data structure
 """
 storageptr(s::Stinger) = s.handle + sizeof(StingerGraph) + 5*sizeof(UInt64)
@@ -92,6 +100,8 @@ immutable StingerEdgeBlock
 end
 
 """
+    edgeparse(edge::StingerEdge)
+
 Parse the direction and neighbor given a `StingerEdge`.
 The first 2 bits of the `neighbor` field of the edge denotes the direction.
 1 - in, 2 - out, 3 - both
@@ -103,6 +113,8 @@ function edgeparse(edge::StingerEdge)
 end
 
 """
+    getvertex(s::Stinger, v::Int64)
+
 Load the specified vertex from the STINGER datastructure.
 """
 function getvertex(s::Stinger, v::Int64)

@@ -1,6 +1,8 @@
 export foralledges
 
 """
+    foralledges(f::Function, s::Stinger, v::Int64)
+
 Iterates over all the edges edges of a vertex and applies a function to each
 edge. The function should take 3 arguments.
 `f(current_edge::StingerEdge, vertexid::Int64, etype::Int64)`
