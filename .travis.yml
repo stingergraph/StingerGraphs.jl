@@ -12,3 +12,10 @@ notifications:
 #script:
 #  - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
 #  - julia -e 'Pkg.clone(pwd()); Pkg.build("StingerGraphs"); Pkg.test("StingerGraphs"; coverage=true)'
+after_success:
+  - julia -e 'Pkg.add("Documenter")'
+  - julia -e 'cd(Pkg.dir("StingerGraphs")); include(joinpath("docs", "make.jl"))'
+# FIXME: Remove once travis actually starts working.
+after_failure:
+  - julia -e 'Pkg.add("Documenter")'
+  - julia -e 'cd(Pkg.dir("StingerGraphs")); include(joinpath("docs", "make.jl"))'
