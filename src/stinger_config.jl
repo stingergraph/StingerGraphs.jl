@@ -1,5 +1,8 @@
 export StingerConfig, stingerconfig, generateconfig
 
+"""
+Used to set the configuration of the STINGER data structure.
+"""
 immutable StingerConfig
     nv::Int64
     nebs::Int64
@@ -11,6 +14,13 @@ immutable StingerConfig
     no_resize::Int8
 end
 
+"""
+    stingerconfig(
+        nv, nebs=0, netypes=0, nvtypes=0, memory_size=0, no_map_none_etype=0,
+        no_map_none_vtype=0, no_resize=0)
+
+Creates a `StingerConfig`.
+"""
 function stingerconfig(
     nv::Int64; nebs::Int64=0, netypes::Int64=0, nvtypes::Int64=0,
     memory_size::Int64=0, no_map_none_etype::Int64=0, no_map_none_vtype::Int64=0,
@@ -34,6 +44,13 @@ function namessize(ntypes::Int64)
     return ccall(dlsym(stinger_core_lib, "stinger_names_size"), UInt64, (Int64,), ntypes)
 end
 
+"""
+    generateconfig(nv::Int64; netypes::Int64=1, nvtypes::Int64=1)
+
+Generates a config for the specified number and types of vertices and the number
+of edge types. The generated config attempts to maximize the number of edge
+blocks that can be allocated.
+"""
 function generateconfig(nv::Int64; netypes::Int64=1, nvtypes::Int64=1)
     sz = maxmemsize() * 0.5 - (verticessize(nv)  + physmapsize(nv) +
         namessize(netypes) + namessize(nvtypes) + 16 + 16)

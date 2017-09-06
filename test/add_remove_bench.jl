@@ -1,4 +1,4 @@
-using StingerWrapper
+using StingerGraphs
 using Base.Test
 
 function generate!(edges, numvertices::Integer, numedges::Integer)

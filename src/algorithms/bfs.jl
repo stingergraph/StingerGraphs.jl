@@ -1,6 +1,8 @@
 export bfs, bfsdistances
 
 """
+    bfs(s::Stinger, source::Int64)
+
 This version is slower as it allocates the maximum possible vertices in the Stinger
 graph. If you know the maximum number of active vertices, call `bfs(s, source, nv)`
 which is faster.
@@ -10,6 +12,8 @@ function bfs(s::Stinger, source::Int64)
 end
 
 """
+    bfs(s::Stinger, source::Int64, nv::Int64)
+
 `bfs` returns a parents array of length `nv`. An empty array is returned on
 failure.
 """
@@ -39,6 +43,8 @@ function bfskernel(s::Stinger, source::Int64, nv::Int64)
 end
 
 """
+    bfsdistances(s::Stinger, source::Int64)
+
 This version is slower as it allocates the maximum possible vertices in the Stinger
 graph. If you know the maximum number of active vertices, call `bfsdistances(s, source, nv)`
 which is faster.
@@ -48,6 +54,8 @@ function bfsdistances(s::Stinger, source::Int64)
 end
 
 """
+    bfsdistances(s::Stinger, source::Int64, nv::Int64)
+
 Obtain both the `parents` array as well as the `distances` from source.
 Empty arrays are returned on failure.
 """

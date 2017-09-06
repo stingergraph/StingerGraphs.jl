@@ -11,6 +11,11 @@ outdegree,
 getsuccessors,
 edgeweight
 
+"""
+The `Stinger` type is the Julia type representing a STINGER data structure
+created in C. It stores the handle to the C data structure. The C data structure
+is automatically freed when the finalizer runs.
+"""
 type Stinger
     handle::Ptr{Void}
 
@@ -30,9 +35,13 @@ end
 
 unsafe_convert{T}(::Type{Ptr{T}}, s::Stinger) = s.handle
 
-"""Use this to get a `StingerGraph` representation of your `Stinger` graph. This
+"""
+    loadstingergraph(s::Stinger)
+
+Use this to get a `StingerGraph` representation of your `Stinger` graph. This
 representation will not be kept in sync with the graph. If you make changes,
-you will need to call this again to load the graph with the new attributes."""
+you will need to call this again to load the graph with the new attributes.
+"""
 loadstingergraph(s::Stinger) = unsafe_load(convert(Ptr{StingerGraph}, s.handle))
 
 function stinger_free(x::Stinger)
@@ -86,6 +95,13 @@ function Stinger(
     Stinger(UInt(nv), etype, offsets, adj, weights, timestamps, firsttimestamps, singletimestamp)
 end
 
+"""
+    remove_edge!(s::Stinger, etype::Int64, from::Int64, to::Int64)
+
+Removes the edge of type `etype` from `from` to `to` from the STINGER graph `s`.
+Raises an error in the edge was not found or if there was an error while
+removing the edge.
+"""
 function remove_edge!(s::Stinger, etype::Int64, from::Int64, to::Int64)
     status = ccall(
         dlsym(stinger_core_lib, "stinger_remove_edge"),
@@ -102,6 +118,16 @@ function remove_edge!(s::Stinger, etype::Int64, from::Int64, to::Int64)
     status
 end
 
+"""
+    insert_edge!(
+        s::Stinger, etype::Int64, from::Int64, to::Int64, weight::Int64,
+        timestamp::Int64
+    )
+
+Inserts an edge of type `etype` from `from` to `to` into the STINGER graph `s`
+with the specified `weight` and `timestamp`.
+Raises an error if the operation was not successful.
+"""
 function insert_edge!(
     s::Stinger, etype::Int64, from::Int64, to::Int64, weight::Int64, timestamp::Int64
     )
@@ -117,6 +143,12 @@ function insert_edge!(
     status
 end
 
+"""
+    insert_edges!(s::Stinger, edges::AbstractArray, numedges::Integer)
+
+Inserts `numedges` edges into the STINGER graph `s`.
+Input format is 5×numedges (etype, src, dst, weight, times).
+"""
 function insert_edges!(s::Stinger, edges::AbstractArray, numedges::Integer)
     m = size(edges,2);
     numedges <= m || throw(DimensionMismatch("requested to insert too many edges $m < $numedges"))
@@ -126,13 +158,27 @@ function insert_edges!(s::Stinger, edges::AbstractArray, numedges::Integer)
     end
 end
 
+"""
+    remove_edges!(s::Stinger, edges::AbstractArray, numedges::Integer)
+
+Removes `numedges` from the STINGER graph `s`.
+Input format is 5×numedges (etype, src, dst, weight, times) to make consistent
+with `insert_edges!`.
+Only the `src`, `dst` and `etype` fields matter.
+"""
 function remove_edges!(s::Stinger, edges::AbstractArray, numedges::Integer)
     size(edges, 1) == 5 || throw(DimensionMismatch("Input format is 5×numedges (etype, src, dst, weight, times)"))
     for i in 1:numedges
-        remove_edge!(s, 0, edges[2,i], edges[3,i])
+        remove_edge!(s, edges[0,i], edges[2,i], edges[3,i])
     end
 end
 
+"""
+    consistency_check(s::Stinger, nv::Int64)
+
+Runs a consistency check on the STINGER data structure.
+Returns `true` if the check passed and `false` if it fails.
+"""
 function consistency_check(s::Stinger, nv::Int64)
     status = ccall(
         dlsym(stinger_core_lib, "stinger_consistency_check"),
@@ -143,7 +189,11 @@ function consistency_check(s::Stinger, nv::Int64)
     status == 0 #true if 0, else false
 end
 
-"Return outdegree of vertex index."
+"""
+    outdegree(s::Stinger, src::Int64)
+
+Returns the outdegree of vertex index.
+"""
 function outdegree(s::Stinger, src::Int64)
     #TODO: Add check if vertex exists in the graph
     ccall(
@@ -154,7 +204,11 @@ function outdegree(s::Stinger, src::Int64)
     )
 end
 
-"Return a `Vector` of indices representing the successors of the source"
+"""
+    getsuccessors(s::Stinger, src::Int64)
+
+Returns a `Vector` of indices representing the successors of `src`.
+"""
 function getsuccessors(s::Stinger, src::Int64)
     #Ideally, allocating a buffer would be preffered.
     #This makes 2 calls to outdegree - one from here and one from inside C
@@ -190,7 +244,12 @@ function getsuccessors(s::Stinger, src::Int64)
     vertexneighbors
 end
 
-"Return the weight of the edge. If it doesn't exist return 0."
+"""
+    edgeweight(s::Stinger, src::Int64, dst::Int64, etype::Int64)
+
+Return the weight of the edge between `src` and `dst` of type `etype`.
+If it doesn't exist return 0.
+"""
 function edgeweight(s::Stinger, src::Int64, dst::Int64, etype::Int64)
     ccall(
         dlsym(stinger_core_lib, "stinger_edgeweight"),

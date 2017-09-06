@@ -22,7 +22,13 @@ function kcore!(s::Stinger, labels::Array{Int64}, counts::Array{Int64})
 end
 
 
-"Find the kcore of the graph."
+"""
+    kcore(s::Stinger, nv::Int64)
+
+Finds the kcore of the graph. Uses the `kcore_find` function exposed by the C
+STINGER library.
+Returns the labels and the counts as two `Vector{Int64}`s.
+"""
 function kcore(s::Stinger, nv::Int64)
     labels = zeros(Int64, nv)
     counts = zeros(Int64, nv)
@@ -31,6 +37,8 @@ function kcore(s::Stinger, nv::Int64)
 end
 
 """
+    kcore(s::Stinger)
+
 This version is slower as it makes a call to `stinger_max_active_vertex`,
 which is sequential and runs through every vertex in the graph. If you know
 the maximum number of active vertices, call `kcore(s, nv)` which is faster.
