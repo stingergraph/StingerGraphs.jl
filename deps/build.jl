@@ -18,9 +18,8 @@ provides(BuildProcess,
         CreateDirectory(joinpath(prefix, "lib"))
         @build_steps begin
             ChangeDirectory(stingerbuilddir)
-            `cmake ..`
+            `cmake .. -DBUILD_TESTING=OFF`
             `make`
-            `ls lib/`
             FileRule(joinpath(prefix, "lib" , "libstinger_core.$(Base.Libdl.dlext)"), @build_steps begin
                 `cp lib/libstinger_core.$(Base.Libdl.dlext) $prefix/lib/`
             end)
