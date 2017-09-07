@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Julia interface to STINGER">
+  <meta name="author" content="rohitvarkey">
+  <link rel="shortcut icon" href="./img/favicon.ico">
+  <title>Home - StingerGraphs.jl</title>
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  <link rel="stylesheet" href="./css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="./css/theme_extra.css" type="text/css" />
+  <link rel="stylesheet" href="./css/highlight.css">
+  <link href="./assets/Documenter.css" rel="stylesheet">
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Home";
+    var mkdocs_page_input_path = "index.md";
+    var mkdocs_page_url = "/";
+  </script>
+  
+  <script src="./js/jquery-2.1.1.min.js"></script>
+  <script src="./js/modernizr-2.8.3.min.js"></script>
+  <script type="text/javascript" src="./js/highlight.pack.js"></script> 
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+      <div class="wy-side-nav-search">
+        <a href="." class="icon icon-home"> StingerGraphs.jl</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="./search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+	<ul class="current">
+	  
+          
+            <li class="toctree-l1 current">
+		
+    <a class="current" href=".">Home</a>
+    <ul class="subnav">
+            
+    <li class="toctree-l2"><a href="#stingergraphs">StingerGraphs</a></li>
+    
+
+    <li class="toctree-l2"><a href="#contents">Contents</a></li>
+    
+        <ul>
+        
+            <li><a class="toctree-l3" href="#setup">Setup</a></li>
+        
+            <li><a class="toctree-l3" href="#the-stinger-type">The Stinger type</a></li>
+        
+            <li><a class="toctree-l3" href="#creating-stinger-graphs">Creating STINGER graphs</a></li>
+        
+            <li><a class="toctree-l3" href="#adding-and-removing-edges">Adding and Removing edges</a></li>
+        
+            <li><a class="toctree-l3" href="#consistency-checks">Consistency Checks</a></li>
+        
+            <li><a class="toctree-l3" href="#api-documentation">API Documentation</a></li>
+        
+        </ul>
+    
+
+    </ul>
+	    </li>
+          
+        </ul>
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href=".">StingerGraphs.jl</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".">Docs</a> &raquo;</li>
+    
+      
+    
+    <li>Home</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        <a href="https://github.com/rohitvarkey/StingerGraphs.jl/edit/master/docs/index.md"
+          class="icon icon-github"> Edit on GitHub</a>
+      
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <p><a id='StingerGraphs-1'></a></p>
+<h1 id="stingergraphs">StingerGraphs</h1>
+<p>StingerGraphs is a Julia wrapper around the <a href="https://github.com/stingergraph/stinger">STINGER</a> library for processing streaming/dynamic graphs. This wrapper is built around the <code>dev</code> branch of the STINGER repository.</p>
+<p><a id='Contents-1'></a></p>
+<h1 id="contents">Contents</h1>
+<ul>
+<li><a href=".#StingerGraphs-1">StingerGraphs</a></li>
+<li><a href=".#Contents-1">Contents</a><ul>
+<li><a href=".#Setup-1">Setup</a></li>
+<li><a href=".#The-Stinger-type-1">The Stinger type</a></li>
+<li><a href=".#Creating-STINGER-graphs-1">Creating STINGER graphs</a></li>
+<li><a href=".#Adding-and-Removing-edges-1">Adding and Removing edges</a></li>
+<li><a href=".#Consistency-Checks-1">Consistency Checks</a></li>
+<li><a href=".#API-Documentation-1">API Documentation</a></li>
+</ul>
+</li>
+</ul>
+<p><a id='Setup-1'></a></p>
+<h2 id="setup">Setup</h2>
+<p>If you have the <code>libstinger_core</code> shared library in a custom path, please configure the environment variable <code>STINGER_LIB_PATH</code> with the path to the folder containing the library.</p>
+<p><a id='The-Stinger-type-1'></a></p>
+<h2 id="the-stinger-type">The Stinger type</h2>
+<p>The Stinger type can be used to create a new STINGER data structure. Due to the use of variable length attributes in the C STINGER data structure, we are unable to use a Julia type to directly map to a STINGER type (http://docs.julialang.org/en/release-0.4/manual/calling-c-and-fortran-code/#struct-type-correspondences). So we use the C pointer handle to interact with the STINGER library in the implementation.</p>
+<p><a id='Creating-STINGER-graphs-1'></a></p>
+<h2 id="creating-stinger-graphs">Creating STINGER graphs</h2>
+<pre><code class="julia">s = Stinger() #Creates a new datastructure
+#Alternatively, to initialize a stinger graph with initial edges (stinger_set_initial_edges)
+s = Stinger(5, 0, [0 for i=1:6], [i%5 for i=1:5], [2 for i=1:5], Int64[], Int64[], -2)
+</code></pre>
+
+<p>We have registered finalizers with Julia that automatically frees your STINGER data structure, the next time the gc runs after it goes out of scope.</p>
+<p><a id='Adding-and-Removing-edges-1'></a></p>
+<h2 id="adding-and-removing-edges">Adding and Removing edges</h2>
+<p>Use the <code>insert_edge!</code> and <code>remove_edge!</code> to add and remove edges respectively. They return the value of 1 on success.</p>
+<pre><code class="julia">s = Stinger(5, 0, [0 for i=1:6], [i%5 for i=1:5], [2 for i=1:5], Int64[], Int64[], -2)
+insert_edge!(s, 0, 1, 4, 2, 2)
+remove_edge!(s, 0, 1, 4)
+</code></pre>
+
+<p><a id='Consistency-Checks-1'></a></p>
+<h2 id="consistency-checks">Consistency Checks</h2>
+<p>The STINGER graph can be checked for consistency using the <code>consistency_check</code> function. It returns <code>true</code> if consistent or <code>false</code> if inconsistent.</p>
+<p><a id='API-Documentation-1'></a></p>
+<h2 id="api-documentation">API Documentation</h2>
+<p><a id='StingerGraphs.Stinger' href='#StingerGraphs.Stinger'>#</a>
+<strong><code>StingerGraphs.Stinger</code></strong> &mdash; <em>Type</em>.</p>
+<p>The <code>Stinger</code> type is the Julia type representing a STINGER data structure created in C. It stores the handle to the C data structure. The C data structure is automatically freed when the finalizer runs.</p>
+<p><a target='_blank' href='https://github.com/rohitvarkey/StingerGraphs.jl/tree/efb1c93ac8a4966447578542a913ac97676c8aba/src/stinger_core.jl#L14-L18' class='documenter-source'>source</a><br></p>
+<p><a id='StingerGraphs.StingerConfig' href='#StingerGraphs.StingerConfig'>#</a>
+<strong><code>StingerGraphs.StingerConfig</code></strong> &mdash; <em>Type</em>.</p>
+<p>Used to set the configuration of the STINGER data structure.</p>
+<p><a target='_blank' href='https://github.com/rohitvarkey/StingerGraphs.jl/tree/efb1c93ac8a4966447578542a913ac97676c8aba/src/stinger_config.jl#L3-L5' class='documenter-source'>source</a><br></p>
+<p><a id='StingerGraphs.StingerEdge' href='#StingerGraphs.StingerEdge'>#</a>
+<strong><code>StingerGraphs.StingerEdge</code></strong> &mdash; <em>Type</em>.</p>
+<p>The STINGER Edge representation.</p>
+<p><a target='_blank' href='https://github.com/rohitvarkey/StingerGraphs.jl/tree/efb1c93ac8a4966447578542a913ac97676c8aba/src/fields.jl#L81-L83' class='documenter-source'>source</a><br></p>
+<p><a id='StingerGraphs.StingerVertex' href='#StingerGraphs.StingerVertex'>#</a>
+<strong><code>StingerGraphs.StingerVertex</code></strong> &mdash; <em>Type</em>.</p>
+<p>The STINGER Vertex representation.</p>
+<p><a target='_blank' href='https://github.com/rohitvarkey/StingerGraphs.jl/tree/efb1c93ac8a4966447578542a913ac97676c8aba/src/fields.jl#L67-L69' class='documenter-source'>source</a><br></p>
+<p><a id='StingerGraphs.bfs-Tuple{StingerGraphs.LevelSynchronous,StingerGraphs.Stinger,Int64,Int64}' href='#StingerGraphs.bfs-Tuple{StingerGraphs.LevelSynchronous,StingerGraphs.Stinger,Int64,Int64}'>#</a>
+<strong><code>StingerGraphs.bfs</code></strong> &mdash; <em>Method</em>.</p>
+<pre><code>bfs(alg::LevelSynchronous, s::Stinger, source::Int64, nv::Int64)
+</code></pre>
+
+<p>Uses the <code>LevelSynchronous</code> algorithm to perform a parallel BFS with the specified source node.</p>
+<p><a target='_blank' href='https://github.com/rohitvarkey/StingerGraphs.jl/tree/efb1c93ac8a4966447578542a913ac97676c8aba/src/algorithms/parallelbfs.jl#L65-L70' class='documenter-source'>source</a><br></p>
+<p><a id='StingerGraphs.bfs-Tuple{StingerGraphs.Stinger,Int64,Int64}' href='#StingerGraphs.bfs-Tuple{StingerGraphs.Stinger,Int64,Int64}'>#</a>
+<strong><code>StingerGraphs.bfs</code></strong> &mdash; <em>Method</em>.</p>
+<pre><code>bfs(s::Stinger, source::Int64, nv::Int64)
+</code></pre>
+
+<p><code>bfs</code> returns a parents array of length <code>nv</code>. An empty array is returned on failure.</p>
+<p><a target='_blank' href='https://github.com/rohitvarkey/StingerGraphs.jl/tree/efb1c93ac8a4966447578542a913ac97676c8aba/src/algorithms/bfs.jl#L14-L19' class='documenter-source'>source</a><br></p>
+<p><a id='StingerGraphs.bfs-Tuple{StingerGraphs.Stinger,Int64}' href='#StingerGraphs.bfs-Tuple{StingerGraphs.Stinger,Int64}'>#</a>
+<strong><code>StingerGraphs.bfs</code></strong> &mdash; <em>Method</em>.</p>
+<pre><code>bfs(s::Stinger, source::Int64)
+</code></pre>
+
+<p>This version is slower as it allocates the maximum possible vertices in the Stinger graph. If you know the maximum number of active vertices, call <code>bfs(s, source, nv)</code> which is faster.</p>
+<p><a target='_blank' href='https://github.com/rohitvarkey/StingerGraphs.jl/tree/efb1c93ac8a4966447578542a913ac97676c8aba/src/algorithms/bfs.jl#L3-L9' class='documenter-source'>source</a><br></p>
+<p><a id='StingerGraphs.bfsdistances-Tuple{StingerGraphs.Stinger,Int64,Int64}' href='#StingerGraphs.bfsdistances-Tuple{StingerGraphs.Stinger,Int64,Int64}'>#</a>
+<strong><code>StingerGraphs.bfsdistances</code></strong> &mdash; <em>Method</em>.</p>
+<pre><code>bfsdistances(s::Stinger, source::Int64, nv::Int64)
+</code></pre>
+
+<p>Obtain both the <code>parents</code> array as well as the <code>distances</code> from source. Empty arrays are returned on failure.</p>
+<p><a target='_blank' href='https://github.com/rohitvarkey/StingerGraphs.jl/tree/efb1c93ac8a4966447578542a913ac97676c8aba/src/algorithms/bfs.jl#L56-L61' class='documenter-source'>source</a><br></p>
+<p><a id='StingerGraphs.bfsdistances-Tuple{StingerGraphs.Stinger,Int64}' href='#StingerGraphs.bfsdistances-Tuple{StingerGraphs.Stinger,Int64}'>#</a>
+<strong><code>StingerGraphs.bfsdistances</code></strong> &mdash; <em>Method</em>.</p>
+<pre><code>bfsdistances(s::Stinger, source::Int64)
+</code></pre>
+
+<p>This version is slower as it allocates the maximum possible vertices in the Stinger graph. If you know the maximum number of active vertices, call <code>bfsdistances(s, source, nv)</code> which is faster.</p>
+<p><a target='_blank' href='https://github.com/rohitvarkey/StingerGraphs.jl/tree/efb1c93ac8a4966447578542a913ac97676c8aba/src/algorithms/bfs.jl#L45-L51' class='documenter-source'>source</a><br></p>
+<p><a id='StingerGraphs.consistency_check-Tuple{StingerGraphs.Stinger,Int64}' href='#StingerGraphs.consistency_check-Tuple{StingerGraphs.Stinger,Int64}'>#</a>
+<strong><code>StingerGraphs.consistency_check</code></strong> &mdash; <em>Method</em>.</p>
+<pre><code>consistency_check(s::Stinger, nv::Int64)
+</code></pre>
+
+<p>Runs a consistency check on the STINGER data structure. Returns <code>true</code> if the check passed and <code>false</code> if it fails.</p>
+<p><a target='_blank' href='https://github.com/rohitvarkey/StingerGraphs.jl/tree/efb1c93ac8a4966447578542a913ac97676c8aba/src/stinger_core.jl#L176-L181' class='documenter-source'>source</a><br></p>
+<p><a id='StingerGraphs.edgeparse-Tuple{StingerGraphs.StingerEdge}' href='#StingerGraphs.edgeparse-Tuple{StingerGraphs.StingerEdge}'>#</a>
+<strong><code>StingerGraphs.edgeparse</code></strong> &mdash; <em>Method</em>.</p>
+<pre><code>edgeparse(edge::StingerEdge)
+</code></pre>
+
+<p>Parse the direction and neighbor given a <code>StingerEdge</code>. The first 2 bits of the <code>neighbor</code> field of the edge denotes the direction. 1 - in, 2 - out, 3 - both</p>
+<p><a target='_blank' href='https://github.com/rohitvarkey/StingerGraphs.jl/tree/efb1c93ac8a4966447578542a913ac97676c8aba/src/fields.jl#L102-L108' class='documenter-source'>source</a><br></p>
+<p><a id='StingerGraphs.edgeweight-Tuple{StingerGraphs.Stinger,Int64,Int64,Int64}' href='#StingerGraphs.edgeweight-Tuple{StingerGraphs.Stinger,Int64,Int64,Int64}'>#</a>
+<strong><code>StingerGraphs.edgeweight</code></strong> &mdash; <em>Method</em>.</p>
+<pre><code>edgeweight(s::Stinger, src::Int64, dst::Int64, etype::Int64)
+</code></pre>
+
+<p>Return the weight of the edge between <code>src</code> and <code>dst</code> of type <code>etype</code>. If it doesn't exist return 0.</p>
+<p><a target='_blank' href='https://github.com/rohitvarkey/StingerGraphs.jl/tree/efb1c93ac8a4966447578542a913ac97676c8aba/src/stinger_core.jl#L247-L252' class='documenter-source'>source</a><br></p>
+<p><a id='StingerGraphs.foralledges-Tuple{Function,StingerGraphs.Stinger,Int64}' href='#StingerGraphs.foralledges-Tuple{Function,StingerGraphs.Stinger,Int64}'>#</a>
+<strong><code>StingerGraphs.foralledges</code></strong> &mdash; <em>Method</em>.</p>
+<pre><code>foralledges(f::Function, s::Stinger, v::Int64)
+</code></pre>
+
+<p>Iterates over all the edges edges of a vertex and applies a function to each edge. The function should take 3 arguments. <code>f(current_edge::StingerEdge, vertexid::Int64, etype::Int64)</code></p>
+<p><a target='_blank' href='https://github.com/rohitvarkey/StingerGraphs.jl/tree/efb1c93ac8a4966447578542a913ac97676c8aba/src/traversal.jl#L3-L9' class='documenter-source'>source</a><br></p>
+<p><a id='StingerGraphs.generateconfig-Tuple{Int64}' href='#StingerGraphs.generateconfig-Tuple{Int64}'>#</a>
+<strong><code>StingerGraphs.generateconfig</code></strong> &mdash; <em>Method</em>.</p>
+<pre><code>generateconfig(nv::Int64; netypes::Int64=1, nvtypes::Int64=1)
+</code></pre>
+
+<p>Generates a config for the specified number and types of vertices and the number of edge types. The generated config attempts to maximize the number of edge blocks that can be allocated.</p>
+<p><a target='_blank' href='https://github.com/rohitvarkey/StingerGraphs.jl/tree/efb1c93ac8a4966447578542a913ac97676c8aba/src/stinger_config.jl#L47-L53' class='documenter-source'>source</a><br></p>
+<p><a id='StingerGraphs.get_nv-Tuple{StingerGraphs.Stinger}' href='#StingerGraphs.get_nv-Tuple{StingerGraphs.Stinger}'>#</a>
+<strong><code>StingerGraphs.get_nv</code></strong> &mdash; <em>Method</em>.</p>
+<pre><code>get_nv(x::Stinger)
+</code></pre>
+
+<p>Returns number of active vertices in the graph. This is based on the largest vertex ID which has a non-zero indegree or outdegree.</p>
+<p><a target='_blank' href='https://github.com/rohitvarkey/StingerGraphs.jl/tree/efb1c93ac8a4966447578542a913ac97676c8aba/src/fields.jl#L43-L48' class='documenter-source'>source</a><br></p>
+<p><a id='StingerGraphs.getsuccessors-Tuple{StingerGraphs.Stinger,Int64}' href='#StingerGraphs.getsuccessors-Tuple{StingerGraphs.Stinger,Int64}'>#</a>
+<strong><code>StingerGraphs.getsuccessors</code></strong> &mdash; <em>Method</em>.</p>
+<pre><code>getsuccessors(s::Stinger, src::Int64)
+</code></pre>
+
+<p>Returns a <code>Vector</code> of indices representing the successors of <code>src</code>.</p>
+<p><a target='_blank' href='https://github.com/rohitvarkey/StingerGraphs.jl/tree/efb1c93ac8a4966447578542a913ac97676c8aba/src/stinger_core.jl#L207-L211' class='documenter-source'>source</a><br></p>
+<p><a id='StingerGraphs.getvertex-Tuple{StingerGraphs.Stinger,Int64}' href='#StingerGraphs.getvertex-Tuple{StingerGraphs.Stinger,Int64}'>#</a>
+<strong><code>StingerGraphs.getvertex</code></strong> &mdash; <em>Method</em>.</p>
+<pre><code>getvertex(s::Stinger, v::Int64)
+</code></pre>
+
+<p>Load the specified vertex from the STINGER datastructure.</p>
+<p><a target='_blank' href='https://github.com/rohitvarkey/StingerGraphs.jl/tree/efb1c93ac8a4966447578542a913ac97676c8aba/src/fields.jl#L115-L119' class='documenter-source'>source</a><br></p>
+<p><a id='StingerGraphs.insert_edge!-Tuple{StingerGraphs.Stinger,Int64,Int64,Int64,Int64,Int64}' href='#StingerGraphs.insert_edge!-Tuple{StingerGraphs.Stinger,Int64,Int64,Int64,Int64,Int64}'>#</a>
+<strong><code>StingerGraphs.insert_edge!</code></strong> &mdash; <em>Method</em>.</p>
+<pre><code>insert_edge!(
+    s::Stinger, etype::Int64, from::Int64, to::Int64, weight::Int64,
+    timestamp::Int64
+)
+</code></pre>
+
+<p>Inserts an edge of type <code>etype</code> from <code>from</code> to <code>to</code> into the STINGER graph <code>s</code> with the specified <code>weight</code> and <code>timestamp</code>. Raises an error if the operation was not successful.</p>
+<p><a target='_blank' href='https://github.com/rohitvarkey/StingerGraphs.jl/tree/efb1c93ac8a4966447578542a913ac97676c8aba/src/stinger_core.jl#L121-L130' class='documenter-source'>source</a><br></p>
+<p><a id='StingerGraphs.insert_edges!-Tuple{StingerGraphs.Stinger,AbstractArray,Integer}' href='#StingerGraphs.insert_edges!-Tuple{StingerGraphs.Stinger,AbstractArray,Integer}'>#</a>
+<strong><code>StingerGraphs.insert_edges!</code></strong> &mdash; <em>Method</em>.</p>
+<pre><code>insert_edges!(s::Stinger, edges::AbstractArray, numedges::Integer)
+</code></pre>
+
+<p>Inserts <code>numedges</code> edges into the STINGER graph <code>s</code>. Input format is 5×numedges (etype, src, dst, weight, times).</p>
+<p><a target='_blank' href='https://github.com/rohitvarkey/StingerGraphs.jl/tree/efb1c93ac8a4966447578542a913ac97676c8aba/src/stinger_core.jl#L146-L151' class='documenter-source'>source</a><br></p>
+<p><a id='StingerGraphs.kcore-Tuple{StingerGraphs.Stinger,Int64}' href='#StingerGraphs.kcore-Tuple{StingerGraphs.Stinger,Int64}'>#</a>
+<strong><code>StingerGraphs.kcore</code></strong> &mdash; <em>Method</em>.</p>
+<pre><code>kcore(s::Stinger, nv::Int64)
+</code></pre>
+
+<p>Finds the kcore of the graph. Uses the <code>kcore_find</code> function exposed by the C STINGER library. Returns the labels and the counts as two <code>Vector{Int64}</code>s.</p>
+<p><a target='_blank' href='https://github.com/rohitvarkey/StingerGraphs.jl/tree/efb1c93ac8a4966447578542a913ac97676c8aba/src/algorithms/kcore.jl#L25-L31' class='documenter-source'>source</a><br></p>
+<p><a id='StingerGraphs.kcore-Tuple{StingerGraphs.Stinger}' href='#StingerGraphs.kcore-Tuple{StingerGraphs.Stinger}'>#</a>
+<strong><code>StingerGraphs.kcore</code></strong> &mdash; <em>Method</em>.</p>
+<pre><code>kcore(s::Stinger)
+</code></pre>
+
+<p>This version is slower as it makes a call to <code>stinger_max_active_vertex</code>, which is sequential and runs through every vertex in the graph. If you know the maximum number of active vertices, call <code>kcore(s, nv)</code> which is faster.</p>
+<p><a target='_blank' href='https://github.com/rohitvarkey/StingerGraphs.jl/tree/efb1c93ac8a4966447578542a913ac97676c8aba/src/algorithms/kcore.jl#L39-L45' class='documenter-source'>source</a><br></p>
+<p><a id='StingerGraphs.kronecker-Tuple{Int64,Int64}' href='#StingerGraphs.kronecker-Tuple{Int64,Int64}'>#</a>
+<strong><code>StingerGraphs.kronecker</code></strong> &mdash; <em>Method</em>.</p>
+<pre><code>kronecker(
+    scale::Int64,
+    edgefactor::Int64;
+    a::Float64=0.57,
+    b::Float64=0.19,
+    c::Float64=0.19
+)
+</code></pre>
+
+<p>Generates edges for a Kronecker generator graph. Returns an array of 2 rows with 1st being the start edge and 2nd row having the end edge.</p>
+<p><a target='_blank' href='https://github.com/rohitvarkey/StingerGraphs.jl/tree/efb1c93ac8a4966447578542a913ac97676c8aba/src/generators/kronecker.jl#L3-L14' class='documenter-source'>source</a><br></p>
+<p><a id='StingerGraphs.outdegree-Tuple{StingerGraphs.Stinger,Int64}' href='#StingerGraphs.outdegree-Tuple{StingerGraphs.Stinger,Int64}'>#</a>
+<strong><code>StingerGraphs.outdegree</code></strong> &mdash; <em>Method</em>.</p>
+<pre><code>outdegree(s::Stinger, src::Int64)
+</code></pre>
+
+<p>Returns the outdegree of vertex index.</p>
+<p><a target='_blank' href='https://github.com/rohitvarkey/StingerGraphs.jl/tree/efb1c93ac8a4966447578542a913ac97676c8aba/src/stinger_core.jl#L192-L196' class='documenter-source'>source</a><br></p>
+<p><a id='StingerGraphs.remove_edge!-Tuple{StingerGraphs.Stinger,Int64,Int64,Int64}' href='#StingerGraphs.remove_edge!-Tuple{StingerGraphs.Stinger,Int64,Int64,Int64}'>#</a>
+<strong><code>StingerGraphs.remove_edge!</code></strong> &mdash; <em>Method</em>.</p>
+<pre><code>remove_edge!(s::Stinger, etype::Int64, from::Int64, to::Int64)
+</code></pre>
+
+<p>Removes the edge of type <code>etype</code> from <code>from</code> to <code>to</code> from the STINGER graph <code>s</code>. Raises an error in the edge was not found or if there was an error while removing the edge.</p>
+<p><a target='_blank' href='https://github.com/rohitvarkey/StingerGraphs.jl/tree/efb1c93ac8a4966447578542a913ac97676c8aba/src/stinger_core.jl#L98-L104' class='documenter-source'>source</a><br></p>
+<p><a id='StingerGraphs.remove_edges!-Tuple{StingerGraphs.Stinger,AbstractArray,Integer}' href='#StingerGraphs.remove_edges!-Tuple{StingerGraphs.Stinger,AbstractArray,Integer}'>#</a>
+<strong><code>StingerGraphs.remove_edges!</code></strong> &mdash; <em>Method</em>.</p>
+<pre><code>remove_edges!(s::Stinger, edges::AbstractArray, numedges::Integer)
+</code></pre>
+
+<p>Removes <code>numedges</code> from the STINGER graph <code>s</code>. Input format is 5×numedges (etype, src, dst, weight, times) to make consistent with <code>insert_edges!</code>. Only the <code>src</code>, <code>dst</code> and <code>etype</code> fields matter.</p>
+<p><a target='_blank' href='https://github.com/rohitvarkey/StingerGraphs.jl/tree/efb1c93ac8a4966447578542a913ac97676c8aba/src/stinger_core.jl#L161-L168' class='documenter-source'>source</a><br></p>
+<p><a id='StingerGraphs.stingerconfig-Tuple{Int64}' href='#StingerGraphs.stingerconfig-Tuple{Int64}'>#</a>
+<strong><code>StingerGraphs.stingerconfig</code></strong> &mdash; <em>Method</em>.</p>
+<pre><code>stingerconfig(
+    nv, nebs=0, netypes=0, nvtypes=0, memory_size=0, no_map_none_etype=0,
+    no_map_none_vtype=0, no_resize=0)
+</code></pre>
+
+<p>Creates a <code>StingerConfig</code>.</p>
+<p><a target='_blank' href='https://github.com/rohitvarkey/StingerGraphs.jl/tree/efb1c93ac8a4966447578542a913ac97676c8aba/src/stinger_config.jl#L17-L23' class='documenter-source'>source</a><br></p>
+<p><a id='Base.getindex-Tuple{StingerGraphs.Stinger,StingerGraphs.StingerFields}' href='#Base.getindex-Tuple{StingerGraphs.Stinger,StingerGraphs.StingerFields}'>#</a>
+<strong><code>Base.getindex</code></strong> &mdash; <em>Method</em>.</p>
+<pre><code>getindex(x::Stinger, field::StingerFields)
+</code></pre>
+
+<p>Obtain value of a field from the Stinger data structure. For <code>batch_time</code> and <code>update_time</code>, use <code>get_batchtime</code> and <code>get_updatetime</code> respectively.</p>
+<p><a target='_blank' href='https://github.com/rohitvarkey/StingerGraphs.jl/tree/efb1c93ac8a4966447578542a913ac97676c8aba/src/fields.jl#L4-L10' class='documenter-source'>source</a><br></p>
+<p><a id='Base.setindex!-Tuple{StingerGraphs.Stinger,Any,StingerGraphs.StingerFields}' href='#Base.setindex!-Tuple{StingerGraphs.Stinger,Any,StingerGraphs.StingerFields}'>#</a>
+<strong><code>Base.setindex!</code></strong> &mdash; <em>Method</em>.</p>
+<pre><code>setindex!(x::Stinger, val, field::StingerFields)
+</code></pre>
+
+<p>Set value of a field from the Stinger data structure.</p>
+<p><a target='_blank' href='https://github.com/rohitvarkey/StingerGraphs.jl/tree/efb1c93ac8a4966447578542a913ac97676c8aba/src/fields.jl#L30-L34' class='documenter-source'>source</a><br></p>
+<p><a id='StingerGraphs.loadstingergraph-Tuple{StingerGraphs.Stinger}' href='#StingerGraphs.loadstingergraph-Tuple{StingerGraphs.Stinger}'>#</a>
+<strong><code>StingerGraphs.loadstingergraph</code></strong> &mdash; <em>Method</em>.</p>
+<pre><code>loadstingergraph(s::Stinger)
+</code></pre>
+
+<p>Use this to get a <code>StingerGraph</code> representation of your <code>Stinger</code> graph. This representation will not be kept in sync with the graph. If you make changes, you will need to call this again to load the graph with the new attributes.</p>
+<p><a target='_blank' href='https://github.com/rohitvarkey/StingerGraphs.jl/tree/efb1c93ac8a4966447578542a913ac97676c8aba/src/stinger_core.jl#L38-L44' class='documenter-source'>source</a><br></p>
+<p><a id='StingerGraphs.storageptr-Tuple{StingerGraphs.Stinger}' href='#StingerGraphs.storageptr-Tuple{StingerGraphs.Stinger}'>#</a>
+<strong><code>StingerGraphs.storageptr</code></strong> &mdash; <em>Method</em>.</p>
+<pre><code>storageptr(s::Stinger)
+</code></pre>
+
+<p>Get a pointer to the storage array of the STINGER data structure</p>
+<p><a target='_blank' href='https://github.com/rohitvarkey/StingerGraphs.jl/tree/efb1c93ac8a4966447578542a913ac97676c8aba/src/fields.jl#L60-L64' class='documenter-source'>source</a><br></p>
+              
+            </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+	  
+        </div>
+      </div>
+
+    </section>
+    
+  </div>
+
+  <div class="rst-versions" role="note" style="cursor: pointer">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+          <a href="https://github.com/rohitvarkey/StingerGraphs.jl" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
+      
+      
+      
+    </span>
+</div>
+    <script src="./js/theme.js"></script>
+      <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script src="./assets/mathjaxhelper.js"></script>
+
+</body>
+</html>
+
+<!--
+MkDocs version : 0.16.3
+Build Date UTC : 2017-09-07 18:40:33
+-->
