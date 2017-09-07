@@ -1,21 +1,20 @@
 # Documentation: http://docs.travis-ci.com/user/languages/julia/
 language: julia
+sudo: false
 os:
   - linux
   - osx
 julia:
-  - release
+  - 0.6
   - nightly
 notifications:
   email: false
 # uncomment the following lines to override the default test script
-#script:
-#  - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
-#  - julia -e 'Pkg.clone(pwd()); Pkg.build("StingerGraphs"); Pkg.test("StingerGraphs"; coverage=true)'
+script:
+  - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
+  - julia -e 'Pkg.clone("https://github.com/rohitvarkey/UnsafeAtomics.jl"); Pkg.clone(pwd());'
+  - travis_wait 30 julia -e 'Pkg.build("StingerGraphs");'
+  - julia -e 'Pkg.test("StingerGraphs"; coverage=true)'
 after_success:
-  - julia -e 'Pkg.add("Documenter")'
-  - julia -e 'cd(Pkg.dir("StingerGraphs")); include(joinpath("docs", "make.jl"))'
-# FIXME: Remove once travis actually starts working.
-after_failure:
   - julia -e 'Pkg.add("Documenter")'
   - julia -e 'cd(Pkg.dir("StingerGraphs")); include(joinpath("docs", "make.jl"))'
