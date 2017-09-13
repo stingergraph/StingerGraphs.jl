@@ -3,5 +3,5 @@ using Documenter, StingerGraphs
 makedocs()
 
 deploydocs(
-    repo = "github.com/rohitvarkey/StingerGraphs.jl.git"
+    repo = "github.com/stingergraph/StingerGraphs.jl.git"
 )
