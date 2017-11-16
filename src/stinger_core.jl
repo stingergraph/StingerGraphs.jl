@@ -8,6 +8,7 @@ remove_edges!,
 insert_edges!,
 consistency_check,
 outdegree,
+indegree,
 getsuccessors,
 edgeweight
 
@@ -198,6 +199,21 @@ function outdegree(s::Stinger, src::Int64)
     #TODO: Add check if vertex exists in the graph
     ccall(
         dlsym(stinger_core_lib, "stinger_outdegree_get"),
+        Int64,
+        (Ptr{Void}, Int64),
+        s, src
+    )
+end
+
+"""
+    indegree(s::Stinger, src::Int64)
+
+Returns the outdegree of vertex index.
+"""
+function indegree(s::Stinger, src::Int64)
+    #TODO: Add check if vertex exists in the graph
+    ccall(
+        dlsym(stinger_core_lib, "stinger_indegree_get"),
         Int64,
         (Ptr{Void}, Int64),
         s, src
